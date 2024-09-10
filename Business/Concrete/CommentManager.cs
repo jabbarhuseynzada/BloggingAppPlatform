@@ -31,9 +31,9 @@ namespace Business.Concrete
         public IResult Add(CommentDto comment)
         {
             var userId = _contextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
             Comment addComment = _mapper.Map<Comment>(comment);
-            addComment.CommentText = comment.CommentText;
-            addComment.PostId = comment.PostId;
+
             addComment.UpdateTime = DateTime.Now;
             addComment.CreateDate = DateTime.Now;
             addComment.IsDeleted = false;
@@ -59,7 +59,21 @@ namespace Business.Concrete
                 return new ErrorResult("You do not have permission do delete comment or comment is not exist");
             }
         }
-
+        [SecuredOperation("User,Admin")]
+        [ValidationAspect<UpdateCommentDto>(typeof(UpdateCommentValidator))]
+        public IResult Update(UpdateCommentDto comment)
+        {
+            var userId = _contextAccessor?.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userRole = _contextAccessor?.HttpContext?.User.FindFirstValue(ClaimTypes.Role);
+            Comment updateComment = _mapper.Map<Comment>(comment);
+            if (updateComment != null && (updateComment.UserId == int.Parse(userId) || userRole == "Admin"))
+            {
+                updateComment.IsDeleted = false;
+                updateComment.UpdateTime = DateTime.Now;
+                _commentDal.Update(updateComment);
+            }
+            throw new NotImplementedException();
+        }
         public IDataResult<List<CommentDto>> GetAll()
         {
             throw new NotImplementedException();
@@ -75,9 +89,5 @@ namespace Business.Concrete
             throw new NotImplementedException();
         }
 
-        public IResult Update(UpdateCommentDto comment)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

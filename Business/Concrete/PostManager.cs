@@ -33,12 +33,12 @@ namespace Business.Concrete
         private readonly IPostDal _postDal;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
-       
+
         [SecuredOperation("User,Admin")]
         [ValidationAspect<AddPostDto>(typeof(PostValidator))]
         public IResult Add(AddPostDto post)
         {
-            var userId =_httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier) !;
+            var userId = _httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
             Post addPost = _mapper.Map<Post>(post);
 
@@ -104,9 +104,10 @@ namespace Business.Concrete
         public IResult Update(UpdatePostDto post)
         {
             var userId = _httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            
+            var userRole = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role)!;
+
             Post updatePost = _mapper.Map<Post>(post);
-            if (updatePost != null)
+            if (updatePost != null && (updatePost.UserId == int.Parse(userId) || userRole == "Admin"))
             {
                 updatePost.UserId = int.Parse(userId);
                 updatePost.UpdateTime = DateTime.Now;

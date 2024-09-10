@@ -40,12 +40,18 @@ namespace Business.Concrete
         }
         public IResult AddOperationClaimToUser(int userId, int operationClaimId)
         {
-            new UserOperationClaim()
+            var claim =new UserOperationClaim()
             {
                 UserId = userId,
                 OperationClaimId = operationClaimId
             };
-            return new SuccessResult("New operation claim succesfuly added to user");
+            var checkClaim = _userOperationClaimDal.Get(c => c.UserId == claim.UserId && c.OperationClaimId == claim.OperationClaimId);
+            if (checkClaim == null)
+            {
+                _userOperationClaimDal.Add(claim);
+                return new SuccessResult("New operation claim succesfuly added to user");
+            }
+            else return new ErrorResult("This user already acquired this operation claim");
         }
         public User GetByMail(string email)
         {
