@@ -1,7 +1,8 @@
 ﻿using Business.Abstract;
 using Core.Entities.Concrete;
+using Core.Helpers.Results.Abstract;
+using Core.Helpers.Results.Concrete;
 using DataAccess.Abstract;
-using DataAccess.Migrations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +38,15 @@ namespace Business.Concrete
             };
             _userOperationClaimDal.Add(claim);
         }
-
+        public IResult AddOperationClaimToUser(int userId, int operationClaimId)
+        {
+            new UserOperationClaim()
+            {
+                UserId = userId,
+                OperationClaimId = operationClaimId
+            };
+            return new SuccessResult("New operation claim succesfuly added to user");
+        }
         public User GetByMail(string email)
         {
             return _userDal.Get(u => u.Email == email);

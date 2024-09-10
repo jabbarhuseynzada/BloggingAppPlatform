@@ -22,5 +22,11 @@ public class MappingProfile : Profile
               /*  .ForMember(dest => dest.CreateDate, opt => opt.Ignore())  
                 .ForMember(dest => dest.UserId, opt => opt.Ignore())      
                 .ForMember(dest => dest.IsDeleted, opt => opt.Ignore())*/
+        CreateMap<CommentDto, Comment>()
+            .ForMember(dest => dest.PostId, opt => opt.MapFrom(src => src.PostId))
+            .ForMember(dest => dest.CommentText, opt => opt.MapFrom(src => src.CommentText));
+        CreateMap<UpdateCommentDto, Comment>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.CommentId))
+            .ForMember(dest => dest.CommentText, opt => opt.MapFrom(src => src.CommentText));
     }
 }
