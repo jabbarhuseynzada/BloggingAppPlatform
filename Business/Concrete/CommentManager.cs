@@ -49,14 +49,14 @@ namespace Business.Concrete
             var deleteComment = _commentDal.Get(c => c.Id == commentId && c.IsDeleted == false);
             if(deleteComment != null && (deleteComment.UserId == int.Parse(userId) || userRole == "Admin"))
             {
-                deleteComment.IsDeleted = false;
+                deleteComment.IsDeleted = true;
                 deleteComment.UpdateTime = DateTime.Now;
                 _commentDal.Delete(deleteComment);
                 return new SuccessResult("Comment is successfully deleted");
             }
             else
             {
-                return new ErrorResult("You do not have permission do delete comment or comment is not exist");
+                return new ErrorResult("You do not have permission to delete comment");
             }
         }
         [SecuredOperation("User,Admin")]
@@ -71,8 +71,12 @@ namespace Business.Concrete
                 updateComment.IsDeleted = false;
                 updateComment.UpdateTime = DateTime.Now;
                 _commentDal.Update(updateComment);
+                return new SuccessResult("Comment Succesfully uptaded");
             }
-            throw new NotImplementedException();
+            else
+            {
+                return new ErrorResult("Problem occured while comment updating");
+            }
         }
         public IDataResult<List<CommentDto>> GetAll()
         {
@@ -86,8 +90,22 @@ namespace Business.Concrete
 
         public IDataResult<List<CommentDto>> GetCommentsByUserId(int userId)
         {
-            throw new NotImplementedException();
+            var comments = _commentDal.GetAll(c => c.UserId == userId && c.IsDeleted ==false);
+            var commentDtos = _mapper.Map<List<CommentDto>>(comments);
+            if (commentDtos.Count > 0)
+                return new SuccessDataResult<List<CommentDto>>(commentDtos, "Comment sucessfully fetched");
+            else
+                return new ErrorDataResult<List<CommentDto>>(commentDtos, "An error occured while posts were fetching");
         }
 
+        public IDataResult<List<CommentDto>> GetCommentsByPostId(int postId)
+        {
+            var comments = _commentDal.GetAll(c=> c.PostId == postId && c.IsDeleted == false);
+            var commentDtos = _mapper.Map<List<CommentDto>>(comments);
+            if (commentDtos.Count > 0)
+                return new SuccessDataResult<List<CommentDto>>(commentDtos, "Comment sucessfully fetched");
+            else
+                return new ErrorDataResult<List<CommentDto>>(commentDtos, "An error occured while posts were fetching");
+        }
     }
 }

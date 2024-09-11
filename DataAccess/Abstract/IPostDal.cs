@@ -11,6 +11,5 @@ namespace DataAccess.Abstract
 {
     public interface IPostDal : IBaseRepository<Post>
     {
-        List<AddPostDto>GetPostByUserId(int userId);
     }
 }

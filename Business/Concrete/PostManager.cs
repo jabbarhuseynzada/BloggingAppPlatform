@@ -122,15 +122,16 @@ namespace Business.Concrete
 
         public IDataResult<List<AddPostDto>> GetPostsByUserId(int userId)
         {
-            //var result = _postDal.GetAll(p => p.UserId == userId && p.IsDeleted==false);
-            var result = _postDal.GetPostByUserId(userId);
-            if(result.Count>0)
+            var posts = _postDal.GetAll(p => p.UserId == userId && p.IsDeleted==false);
+            var postsDto = _mapper.Map<List<AddPostDto>>(posts);
+            
+            if(postsDto.Count>0)
             {
-                return new SuccessDataResult<List<AddPostDto>>(result, "This user's posts successfully fetched");
+                return new SuccessDataResult<List<AddPostDto>>(postsDto, "This user's posts successfully fetched");
             }
             else
             {
-                return new ErrorDataResult<List<AddPostDto>>(result, "This is not foun or not shared any post");
+                return new ErrorDataResult<List<AddPostDto>>(postsDto, "This is not foun or not shared any post");
             }
         }
 
@@ -155,15 +156,15 @@ namespace Business.Concrete
             }
         }
 
-        public IDataResult<List<AddPostDto>> GetAll()
+        public IDataResult<List<AddPostDto>> GetAllPosts()
         {
-            //var result = _postDal.GetAll(p => p.IsDeleted == false);
-
-            //if (result.Count > 0)
-            //{
-                
-            //}
-            throw new NotImplementedException();
+            var result = _postDal.GetAll(p => p.IsDeleted == false);
+            var resultDto = _mapper.Map<List<AddPostDto>>(result);
+            
+            if(resultDto.Count > 0)
+                return new SuccessDataResult<List<AddPostDto>>(resultDto, "All the posts succesfully fetched");
+            else
+                return new ErrorDataResult<List<AddPostDto>>(resultDto, "An error occured while posts were fetching");
         }
     }
 }

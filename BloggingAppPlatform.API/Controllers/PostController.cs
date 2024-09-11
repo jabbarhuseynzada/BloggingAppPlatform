@@ -44,10 +44,10 @@ namespace BloggingAppPlatform.API.Controllers
             var post = _postService.Delete(id);
             if (post.Success)
             {
-                return Ok();
+                return Ok(post.Message);
             }else
             {
-                return BadRequest();
+                return BadRequest(post.Message);
             }
         }
         [HttpGet("getPostsByUserId")]
@@ -55,13 +55,19 @@ namespace BloggingAppPlatform.API.Controllers
         {
             var posts = _postService.GetPostsByUserId(userId);
             if (posts.Success)
-            {
-                return Ok(posts);
-            }
+                return Ok(posts.Data);
             else
-            {
                 return BadRequest("Cannot found any posts or you don't have permission");
-            }
+        }
+
+        [HttpGet("getAllPosts")]
+        public IActionResult GetAllPosts()
+        {
+            var posts = _postService.GetAllPosts();
+            if (posts.Success)
+                return Ok(posts.Data);
+            else 
+                return BadRequest(posts.Message);
         }
     }
 }

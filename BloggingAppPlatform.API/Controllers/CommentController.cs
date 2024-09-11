@@ -24,8 +24,54 @@ namespace BloggingAppPlatform.API.Controllers
             }
             else
             {
-                return BadRequest("Problem has occured");
+                return BadRequest(addedComment.Message);
             }
         }
+        [HttpPost("deleteComment")]
+        public IActionResult DeleteComment(int Id)
+        {
+            var comment = _commentService.Delete(Id);
+            if(comment != null)
+            {
+                return Ok(comment.Message);
+            }
+            else
+            {
+                return BadRequest(comment.Message);
+            }
+        }
+        [HttpPost("updateComment")]
+        public IActionResult UpdateComment(UpdateCommentDto commentDto)
+        {
+            var comment = _commentService.Update(commentDto);
+            if(comment != null)
+            {
+                return Ok(comment.Message);
+            }
+            else
+            {
+                return BadRequest(comment.Message);
+            }
+        }
+
+        [HttpGet("getCommentsByUserId")]
+        public IActionResult GetCommentsByUserId(int userId)
+        {
+            var comments = _commentService.GetCommentsByUserId(userId);
+            if (comments.Data.Count > 0)
+                return Ok(comments.Data);
+            else 
+                return BadRequest(comments.Message);
+        }
+        [HttpGet("getCommentsByPostId")]
+        public IActionResult GetCommentsByPostId(int postId)
+        {
+            var comments = _commentService.GetCommentsByPostId(postId);
+            if (comments.Data.Count > 0)
+                return Ok(comments.Data);
+            else
+                return BadRequest(comments.Message);
+        }
+
     }
 }

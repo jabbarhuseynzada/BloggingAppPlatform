@@ -15,6 +15,6 @@ namespace Business.Abstract
         IResult Delete(int id);
         IDataResult<List<AddPostDto>> GetPostsByUserId(int userId);
         IDataResult<AddPostDto> GetPostById(int id);
-        IDataResult<List<AddPostDto>> GetAll();
+        IDataResult<List<AddPostDto>> GetAllPosts();
     }
 }
