@@ -9,7 +9,6 @@ namespace Core.Helpers.Results.Concrete
 {
     public class Result : IResult
     {
-        //nested constructor
         public Result(bool success, string message) : this(success)
         {
 

@@ -23,7 +23,6 @@ namespace Core.Helpers.Security.Hashing
 
             for (int i = 0; i < computedHash.Length; i++)
             {
-                //sfg5rte //sgfh65
                 if (computedHash[i] != passwordHash[i])
                 {
                     return false;

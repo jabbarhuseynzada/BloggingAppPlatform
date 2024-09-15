@@ -30,16 +30,14 @@ namespace Business.BusinessAspect.Autofac.Secured
 
             var roleClaims = context.User.ClaimRoles();
 
-            // Allow Admin role to bypass the check
-            if (roleClaims.Contains("Admin"))
-            {
-                return;
-            }
+
 
             foreach (var roleClaim in _roles)
             {
                 if (roleClaims.Contains(roleClaim))
                 {
+                    
+                    //burda ifle eger userdise id-si yoxlanilsin elave olunmalidi cunki onsuz rollar table-si yarananda default olaraq user, admin, mod elave etmisem 
                     return;
                 }
             }

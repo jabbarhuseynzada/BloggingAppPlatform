@@ -34,7 +34,7 @@ namespace Business.Concrete
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
 
-        [SecuredOperation("User,Admin")]
+        [SecuredOperation("User,Admin,Moderator")]
         [ValidationAspect<AddPostDto>(typeof(PostValidator))]
         public IResult Add(AddPostDto post)
         {
@@ -52,49 +52,25 @@ namespace Business.Concrete
             return new SuccessResult("Post added successfully");
         }
 
-        //[SecuredOperation("User,Admin,Moderator")]
-        //public IResult Delete(int id)
-        //{
-        //    var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) !;
-        //    var deletePost = _postDal.Get(p => p.Id == id && p.IsDeleted == false);
-        //    if (deletePost != null && deletePost.UserId == int.Parse(userId))
-        //    {
-        //        deletePost.IsDeleted = true;
-        //        deletePost.UpdateTime = DateTime.Now;
-        //        _postDal.Delete(deletePost);
-        //        return new SuccessResult("Post have been deleted successfully");
-        //    }
-        //    else
-        //    {
-        //        return new ErrorResult("You don't have any access for deleting this post");
-        //    }
-        //}
-        [SecuredOperation("User,Admin")]
+        [SecuredOperation("User,Admin,Moderator")]
         public IResult Delete(int id)
         {
             var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var userRole = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role); // Assuming role is stored in ClaimTypes.Role
+            var deletePostClaim = _httpContextAccessor.HttpContext.User.ClaimRoles().Contains("post.delete");
 
             var deletePost = _postDal.Get(p => p.Id == id && p.IsDeleted == false);
 
-            // Check if the user is an Admin or if the user is the owner of the post
-            if (deletePost != null && (deletePost.UserId == int.Parse(userId) || userRole == "Admin"))
+            
+            if (deletePost != null && (deletePostClaim || deletePost.UserId == int.Parse(userId)))
             {
-                if (deletePost != null)
-                {
-                    deletePost.IsDeleted = true;
-                    deletePost.UpdateTime = DateTime.Now;
-                    _postDal.Delete(deletePost);
-                    return new SuccessResult("Post has been deleted successfully");
-                }
-                else
-                {
-                    return new ErrorResult("Post not found");
-                }
+                deletePost.IsDeleted = true;
+                deletePost.UpdateTime = DateTime.Now;
+                _postDal.Delete(deletePost);
+                return new SuccessResult("Post has been deleted successfully");
             }
             else
             {
-                return new ErrorResult("You don't have access to delete this post");
+                return new ErrorResult("Post is not found or You cannot delete");
             }
         }
 
@@ -104,10 +80,9 @@ namespace Business.Concrete
         public IResult Update(UpdatePostDto post)
         {
             var userId = _httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            var userRole = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role)!;
 
             Post updatePost = _mapper.Map<Post>(post);
-            if (updatePost != null && (updatePost.UserId == int.Parse(userId) || userRole == "Admin"))
+            if (updatePost != null && updatePost.UserId == int.Parse(userId))
             {
                 updatePost.UserId = int.Parse(userId);
                 updatePost.UpdateTime = DateTime.Now;
@@ -145,7 +120,7 @@ namespace Business.Concrete
                 CoverImageUrl = post.CoverImageUrl,
                 UserId = post.UserId
             };
-                ;
+                
             if(result != null)
             {
                 return new SuccessDataResult<AddPostDto>(result, "Post successfully fetched");

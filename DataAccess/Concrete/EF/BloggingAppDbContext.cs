@@ -45,6 +45,16 @@ namespace DataAccess.Concrete.EF
                 {
                     Id=3,
                     Name = "Moderator"
+                },
+                new OperationClaim
+                {
+                    Id = 4,
+                    Name = "post.delete"
+                },
+                new OperationClaim
+                {
+                    Id = 5,
+                    Name = "comment.delete"
                 }
             );
         }
