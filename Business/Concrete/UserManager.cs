@@ -3,11 +3,6 @@ using Core.Entities.Concrete;
 using Core.Helpers.Results.Abstract;
 using Core.Helpers.Results.Concrete;
 using DataAccess.Abstract;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
@@ -40,7 +35,7 @@ namespace Business.Concrete
         }
         public IResult AddOperationClaimToUser(int userId, int operationClaimId)
         {
-            var claim =new UserOperationClaim()
+            var claim = new UserOperationClaim()
             {
                 UserId = userId,
                 OperationClaimId = operationClaimId

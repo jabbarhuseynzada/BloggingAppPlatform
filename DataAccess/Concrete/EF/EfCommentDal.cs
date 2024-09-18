@@ -1,9 +1,6 @@
-﻿using AutoMapper;
-using Core.DataAccess.Concrete;
-using Core.Helpers.Results.Abstract;
+﻿using Core.DataAccess.Concrete;
 using DataAccess.Abstract;
 using Entities.Concrete;
-using Entities.DTOs;
 
 namespace DataAccess.Concrete.EF;
 

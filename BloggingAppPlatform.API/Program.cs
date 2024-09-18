@@ -1,7 +1,5 @@
 using Autofac;
-using Autofac.Core;
 using Autofac.Extensions.DependencyInjection;
-using AutoMapper;
 using Business.Dependency.Autofac;
 using Core.DependencyResolve;
 using Core.Extensions;

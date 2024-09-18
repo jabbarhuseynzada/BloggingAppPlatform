@@ -24,10 +24,10 @@ public class MappingProfile : Profile
                 .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.PostTitle))
                 .ForMember(dest => dest.Context, opt => opt.MapFrom(src => src.PostContext))
                 .ForMember(dest => dest.CoverImageUrl, opt => opt.MapFrom(src => src.CoverImageUrl));
-                //.ForMember(dest => dest.UpdateTime, opt => opt.MapFrom(src => DateTime.Now)) 
-              /*  .ForMember(dest => dest.CreateDate, opt => opt.Ignore())  
-                .ForMember(dest => dest.UserId, opt => opt.Ignore())      
-                .ForMember(dest => dest.IsDeleted, opt => opt.Ignore())*/
+        //.ForMember(dest => dest.UpdateTime, opt => opt.MapFrom(src => DateTime.Now)) 
+        /*  .ForMember(dest => dest.CreateDate, opt => opt.Ignore())  
+          .ForMember(dest => dest.UserId, opt => opt.Ignore())      
+          .ForMember(dest => dest.IsDeleted, opt => opt.Ignore())*/
         CreateMap<CommentDto, Comment>()
             .ForMember(dest => dest.PostId, opt => opt.MapFrom(src => src.PostId))
             .ForMember(dest => dest.CommentText, opt => opt.MapFrom(src => src.CommentText));

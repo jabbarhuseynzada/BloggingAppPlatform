@@ -28,7 +28,7 @@ namespace Business.Concrete
         private readonly IPostDal _postDal;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly IMapper _mapper;
-       
+
         [SecuredOperation("User,Admin,Moderator")]
         [ValidationAspect<CommentDto>(typeof(CommentValidator))]
         public IResult Add(CommentDto comment)
@@ -50,7 +50,7 @@ namespace Business.Concrete
             var userId = _contextAccessor?.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var deleteCommentClaim = _contextAccessor.HttpContext.User.ClaimRoles().Contains("comment.delete");
             var deleteComment = _commentDal.Get(c => c.Id == commentId && c.IsDeleted == false);
-            if(deleteComment != null && (deleteComment.UserId == int.Parse(userId) || _postDal.Get(p => p.Id == deleteComment.PostId).UserId == int.Parse(userId) || deleteCommentClaim == true ))
+            if (deleteComment != null && (deleteComment.UserId == int.Parse(userId) || _postDal.Get(p => p.Id == deleteComment.PostId).UserId == int.Parse(userId) || deleteCommentClaim == true))
             {
                 deleteComment.IsDeleted = true;
                 deleteComment.UpdateTime = DateTime.Now;
@@ -83,9 +83,9 @@ namespace Business.Concrete
         }
         public IDataResult<List<CommentDto>> GetAll()
         {
-            var comments = _commentDal.GetAll(c=> c.IsDeleted == false);
+            var comments = _commentDal.GetAll(c => c.IsDeleted == false);
             var commentDtos = _mapper.Map<List<CommentDto>>(comments);
-            if(comments.Count > 0)
+            if (comments.Count > 0)
                 return new SuccessDataResult<List<CommentDto>>(commentDtos, "All comments are fetched");
             else
                 return new ErrorDataResult<List<CommentDto>>(commentDtos, "There is no comments");
@@ -105,7 +105,7 @@ namespace Business.Concrete
 
         public IDataResult<List<CommentDto>> GetCommentsByUserId(int userId)
         {
-            var comments = _commentDal.GetAll(c => c.UserId == userId && c.IsDeleted ==false);
+            var comments = _commentDal.GetAll(c => c.UserId == userId && c.IsDeleted == false);
             var commentDtos = _mapper.Map<List<CommentDto>>(comments);
             if (commentDtos.Count > 0)
                 return new SuccessDataResult<List<CommentDto>>(commentDtos, "Comment sucessfully fetched");
@@ -115,7 +115,7 @@ namespace Business.Concrete
 
         public IDataResult<List<CommentDto>> GetCommentsByPostId(int postId)
         {
-            var comments = _commentDal.GetAll(c=> c.PostId == postId && c.IsDeleted == false);
+            var comments = _commentDal.GetAll(c => c.PostId == postId && c.IsDeleted == false);
             var commentDtos = _mapper.Map<List<CommentDto>>(comments);
             if (commentDtos.Count > 0)
                 return new SuccessDataResult<List<CommentDto>>(commentDtos, "Comment sucessfully fetched");

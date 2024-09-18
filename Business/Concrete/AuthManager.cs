@@ -5,11 +5,6 @@ using Core.Helpers.Results.Concrete;
 using Core.Helpers.Security.Hashing;
 using Core.Helpers.Security.JWT;
 using Entities.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Business.Concrete
 {

@@ -1,5 +1,4 @@
 ﻿using Business.Abstract;
-using Core.Helpers.Results.Concrete;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BloggingAppPlatform.API.Controllers
@@ -13,7 +12,7 @@ namespace BloggingAppPlatform.API.Controllers
         public IActionResult AddOperationClaimToUser(int userId, int claimId)
         {
             var result = _userService.AddOperationClaimToUser(userId, claimId);
-            if(result.Success)
+            if (result.Success)
             {
                 return Ok(result.Message);
             }

@@ -3,7 +3,6 @@ using Business.Abstract;
 using Business.BusinessAspect.Autofac.Secured;
 using Business.Validation.FluentValidation;
 using Core.Aspects.Autofac.Validation.FluentValidation;
-using Core.Entities.Concrete;
 using Core.Extensions;
 using Core.Helpers.Results.Abstract;
 using Core.Helpers.Results.Concrete;
@@ -11,13 +10,7 @@ using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 using IResult = Core.Helpers.Results.Abstract.IResult;
 
 namespace Business.Concrete
@@ -60,7 +53,7 @@ namespace Business.Concrete
 
             var deletePost = _postDal.Get(p => p.Id == id && p.IsDeleted == false);
 
-            
+
             if (deletePost != null && (deletePostClaim || deletePost.UserId == int.Parse(userId)))
             {
                 deletePost.IsDeleted = true;
@@ -97,10 +90,10 @@ namespace Business.Concrete
 
         public IDataResult<List<AddPostDto>> GetPostsByUserId(int userId)
         {
-            var posts = _postDal.GetAll(p => p.UserId == userId && p.IsDeleted==false);
+            var posts = _postDal.GetAll(p => p.UserId == userId && p.IsDeleted == false);
             var postsDto = _mapper.Map<List<AddPostDto>>(posts);
-            
-            if(postsDto.Count>0)
+
+            if (postsDto.Count > 0)
             {
                 return new SuccessDataResult<List<AddPostDto>>(postsDto, "This user's posts successfully fetched");
             }
@@ -120,8 +113,8 @@ namespace Business.Concrete
                 CoverImageUrl = post.CoverImageUrl,
                 UserId = post.UserId
             };
-                
-            if(result != null)
+
+            if (result != null)
             {
                 return new SuccessDataResult<AddPostDto>(result, "Post successfully fetched");
             }
@@ -135,8 +128,8 @@ namespace Business.Concrete
         {
             var result = _postDal.GetAll(p => p.IsDeleted == false);
             var resultDto = _mapper.Map<List<AddPostDto>>(result);
-            
-            if(resultDto.Count > 0)
+
+            if (resultDto.Count > 0)
                 return new SuccessDataResult<List<AddPostDto>>(resultDto, "All the posts succesfully fetched");
             else
                 return new ErrorDataResult<List<AddPostDto>>(resultDto, "An error occured while posts were fetching");

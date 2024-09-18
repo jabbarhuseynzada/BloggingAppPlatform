@@ -4,8 +4,6 @@ using Core.Helpers.Interceptors;
 using Core.Helpers.IoC;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Linq;
 
 namespace Business.BusinessAspect.Autofac.Secured
 {
@@ -36,7 +34,7 @@ namespace Business.BusinessAspect.Autofac.Secured
             {
                 if (roleClaims.Contains(roleClaim))
                 {
-                    
+
                     //burda ifle eger userdise id-si yoxlanilsin elave olunmalidi cunki onsuz rollar table-si yarananda default olaraq user, admin, mod elave etmisem 
                     return;
                 }

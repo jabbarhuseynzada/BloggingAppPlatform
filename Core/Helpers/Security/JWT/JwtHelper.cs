@@ -2,12 +2,7 @@
 using Core.Extensions;
 using Core.Helpers.Security.Encryption;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Core.Helpers.Security.JWT
 {

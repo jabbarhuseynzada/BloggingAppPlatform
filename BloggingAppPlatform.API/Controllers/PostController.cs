@@ -1,7 +1,5 @@
 ﻿using Business.Abstract;
-using Core.Helpers.Results.Concrete;
 using Entities.DTOs;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BloggingAppPlatform.API.Controllers
@@ -33,7 +31,7 @@ namespace BloggingAppPlatform.API.Controllers
         public IActionResult UpdatePost(UpdatePostDto post)
         {
             _postService.Update(post);
-            if(post != null)
+            if (post != null)
                 return Ok("Succesfully uptaded");
             else
                 return BadRequest("xeta bas verdi");
@@ -45,7 +43,8 @@ namespace BloggingAppPlatform.API.Controllers
             if (post.Success)
             {
                 return Ok(post.Message);
-            }else
+            }
+            else
             {
                 return BadRequest(post.Message);
             }
@@ -66,7 +65,7 @@ namespace BloggingAppPlatform.API.Controllers
             var posts = _postService.GetAllPosts();
             if (posts.Success)
                 return Ok(posts.Data);
-            else 
+            else
                 return BadRequest(posts.Message);
         }
     }

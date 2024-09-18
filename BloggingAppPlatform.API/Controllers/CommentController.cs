@@ -1,6 +1,5 @@
 ﻿using Business.Abstract;
 using Entities.DTOs;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BloggingAppPlatform.API.Controllers
@@ -18,7 +17,7 @@ namespace BloggingAppPlatform.API.Controllers
         public IActionResult AddComment(CommentDto comment)
         {
             var addedComment = _commentService.Add(comment);
-            if(addedComment != null)
+            if (addedComment != null)
             {
                 return Ok(addedComment.Message);
             }
@@ -31,7 +30,7 @@ namespace BloggingAppPlatform.API.Controllers
         public IActionResult DeleteComment(int Id)
         {
             var comment = _commentService.Delete(Id);
-            if(comment != null)
+            if (comment != null)
             {
                 return Ok(comment.Message);
             }
@@ -44,7 +43,7 @@ namespace BloggingAppPlatform.API.Controllers
         public IActionResult UpdateComment(UpdateCommentDto commentDto)
         {
             var comment = _commentService.Update(commentDto);
-            if(comment != null)
+            if (comment != null)
             {
                 return Ok(comment.Message);
             }
@@ -60,7 +59,7 @@ namespace BloggingAppPlatform.API.Controllers
             var comments = _commentService.GetCommentsByUserId(userId);
             if (comments.Data.Count > 0)
                 return Ok(comments.Data);
-            else 
+            else
                 return BadRequest(comments.Message);
         }
         [HttpGet("getCommentsByPostId")]

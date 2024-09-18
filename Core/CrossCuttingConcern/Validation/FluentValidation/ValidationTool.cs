@@ -1,6 +1,4 @@
-﻿
-using Core.Entities.Abstract;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace Core.CrossCuttingConcern.Validation.FluentValidation
 {

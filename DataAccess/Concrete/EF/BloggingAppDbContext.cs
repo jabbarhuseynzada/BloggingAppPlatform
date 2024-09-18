@@ -1,11 +1,6 @@
 ﻿using Core.Entities.Concrete;
 using Entities.Concrete;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.Concrete.EF
 {
@@ -32,7 +27,8 @@ namespace DataAccess.Concrete.EF
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<OperationClaim>().HasData(
-                new OperationClaim{
+                new OperationClaim
+                {
                     Id = 1,
                     Name = "User",
                 },
@@ -43,7 +39,7 @@ namespace DataAccess.Concrete.EF
                 },
                 new OperationClaim
                 {
-                    Id=3,
+                    Id = 3,
                     Name = "Moderator"
                 },
                 new OperationClaim
