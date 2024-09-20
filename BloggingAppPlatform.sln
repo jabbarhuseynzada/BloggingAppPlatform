@@ -14,6 +14,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BloggingAppPlatform.API", "BloggingAppPlatform.API\BloggingAppPlatform.API.csproj", "{52A36A50-F8DC-469A-A9CC-78DFAE28CC3E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BloggingAppPlatform.MVC", "BloggingAppPlatform.MVC\BloggingAppPlatform.MVC.csproj", "{05637743-11A6-455C-88CE-C6725C77E0E0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B5AA8C62-FBBA-4C69-9C43-87E39748304C} = {B5AA8C62-FBBA-4C69-9C43-87E39748304C}
+		{BF5F1891-39C3-4AB2-9A7B-38CA76775178} = {BF5F1891-39C3-4AB2-9A7B-38CA76775178}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
