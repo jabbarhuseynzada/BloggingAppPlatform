@@ -4,6 +4,7 @@ using AutoMapper;
 using Business.Dependency.Autofac;
 using Core.Helpers.Security.Encryption;
 using Core.Helpers.Security.JWT;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
@@ -11,6 +12,7 @@ using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpContextAccessor();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -35,21 +37,29 @@ builder.Services.AddSession(options =>
 // Token configuration
 var tokenOptions = builder.Configuration.GetSection("TokenOptions").Get<TokenOptions>();
 
-builder.Services.AddAuthentication(x =>
+// Add cookie authentication
+builder.Services.AddAuthentication(options =>
 {
-    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(option =>
+    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+})
+.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
 {
-    option.TokenValidationParameters = new TokenValidationParameters()
+    options.LoginPath = "/Auth/Login"; // Path to redirect when not authenticated
+    options.LogoutPath = "/Auth/Logout";
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Cookie expiration
+})
+.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey),
-        RequireExpirationTime = true,
-        ValidateAudience = true,
         ValidateIssuer = true,
-        ValidAudience = tokenOptions.Audience,
+        ValidateAudience = true,
         ValidIssuer = tokenOptions.Issuer,
+        ValidAudience = tokenOptions.Audience,
+        RequireExpirationTime = true
     };
 });
 
@@ -71,8 +81,9 @@ app.UseStaticFiles();
 app.UseRouting();
 
 // Enable session middleware
-app.UseSession(); // Ensure this is before UseAuthentication
+app.UseSession(); // Ensure this is before UseAuthentication()
 
+// Enable authentication and authorization
 app.UseAuthentication();
 app.UseAuthorization();
 
