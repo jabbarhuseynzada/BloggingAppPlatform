@@ -88,51 +88,42 @@ namespace Business.Concrete
             }
         }
 
-        public IDataResult<List<AddPostDto>> GetPostsByUserId(int userId)
+        public IDataResult<List<Post>> GetPostsByUserId(int userId)
         {
             var posts = _postDal.GetAll(p => p.UserId == userId && p.IsDeleted == false);
-            var postsDto = _mapper.Map<List<AddPostDto>>(posts);
 
-            if (postsDto.Count > 0)
+            if (posts.Count > 0)
             {
-                return new SuccessDataResult<List<AddPostDto>>(postsDto, "This user's posts successfully fetched");
+                return new SuccessDataResult<List<Post>>(posts, "This user's posts successfully fetched");
             }
             else
             {
-                return new ErrorDataResult<List<AddPostDto>>(postsDto, "This is not foun or not shared any post");
+                return new ErrorDataResult<List<Post>>(posts, "This is not foun or not shared any post");
             }
         }
 
-        public IDataResult<AddPostDto> GetPostById(int id)
+        public IDataResult<Post> GetPostById(int id)
         {
-            var post = _postDal.Get(p => p.Id == id && p.IsDeleted == false);
-            AddPostDto result = new()
-            {
-                PostTitle = post.Title,
-                PostContext = post.Context,
-                CoverImageUrl = post.CoverImageUrl,
-                UserId = post.UserId
-            };
+            var result = _postDal.Get(p => p.Id == id && p.IsDeleted == false);
 
             if (result != null)
             {
-                return new SuccessDataResult<AddPostDto>(result, "Post successfully fetched");
+                return new SuccessDataResult<Post>(result, "Post successfully fetched");
             }
             else
             {
-                return new ErrorDataResult<AddPostDto>(result, "An error occured while post was fetching");
+                return new ErrorDataResult<Post>(result, "An error occured while post was fetching");
             }
         }
 
-        public IDataResult<List<AddPostDto>> GetAllPosts()
+        public IDataResult<List<Post>> GetAllPosts()
         {
             var result = _postDal.GetAll(p => p.IsDeleted == false);
-            var resultDto = _mapper.Map<List<AddPostDto>>(result);
 
-            if (resultDto.Count > 0)
-                return new SuccessDataResult<List<AddPostDto>>(resultDto, "All the posts succesfully fetched");
+            if (result.Count > 0)
+                return new SuccessDataResult<List<Post>>(result, "All the posts succesfully fetched");
             else
-                return new ErrorDataResult<List<AddPostDto>>(resultDto, "An error occured while posts were fetching");
+                return new ErrorDataResult<List<Post>>(result, "An error occured while posts were fetching");
         }
     }
 }

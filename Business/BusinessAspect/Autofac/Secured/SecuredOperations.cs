@@ -12,6 +12,7 @@ namespace Business.BusinessAspect.Autofac.Secured
         private readonly string[] _roles;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
+
         public SecuredOperation(string roles)
         {
             _roles = roles.Split(',');

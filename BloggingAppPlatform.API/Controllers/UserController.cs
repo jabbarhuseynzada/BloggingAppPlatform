@@ -21,5 +21,25 @@ namespace BloggingAppPlatform.API.Controllers
                 return BadRequest(result.Message);
             }
         }
+
+        //[HttpPost("followUser")]
+        //public IActionResult FollowUser(int userId)
+        //{
+        //    var result = _userService.FollowUser(userId);
+        //}
+
+        [HttpGet("GetUsers")]
+        public IActionResult GetAllUsers()
+        {
+            var result = _userService.GetAllUsers();
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+            else
+            {
+                return BadRequest(result.Message);
+            }
+        }
     }
 }

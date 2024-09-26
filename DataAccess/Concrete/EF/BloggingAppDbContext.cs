@@ -11,6 +11,7 @@ namespace DataAccess.Concrete.EF
             optionsBuilder.UseSqlServer(@"Server=localhost;Database=BloggingAppDb;Trusted_Connection=true;TrustServerCertificate=true");
         }
         public DbSet<User> Users { get; set; }
+        public DbSet<UserFollower> UsersFollower { get; set; }
         public DbSet<OperationClaim> OperationClaims { get; set; }
         public DbSet<UserOperationClaim> UserOperations { get; set; }
         public DbSet<Post> Posts { get; set; }
@@ -52,6 +53,14 @@ namespace DataAccess.Concrete.EF
                     Id = 5,
                     Name = "comment.delete"
                 }
+            );
+            modelBuilder.Entity<UserOperationClaim>().HasData(
+                 new UserOperationClaim
+                 {
+                     Id = 1,
+                     UserId = 1,
+                     OperationClaimId = 2
+                 }
             );
         }
     }

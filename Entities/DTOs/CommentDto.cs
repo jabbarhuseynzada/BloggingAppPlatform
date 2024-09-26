@@ -6,5 +6,6 @@ namespace Entities.DTOs
     {
         public int PostId { get; set; }
         public string CommentText { get; set; }
+        public DateTime CommentTime { get; set; }
     }
 }

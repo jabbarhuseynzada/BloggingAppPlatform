@@ -1,8 +1,78 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model BloggingAppPlatform.MVC.Areas.Admin.ViewModels.PostVM
 @{
+    ViewData["Title"] = "Posts";
+}
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Message"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
 }
 <h1>
     Posts
 </h1>
+<table class="table table-bordered table-striped overflow-scroll">
+    <thead>
+        <tr class="text-center">
+            <th>#</th>
+            <th>
+                Post ID
+            </th>
+            <th>
+                User ID
+            </th>
+            <th>
+                Title
+            </th>
+            <th>
+                Context
+            </th>
+            <th>
+                Cover Image
+            </th>
+            <th>
+                Post Date
+            </th>
+            <th>
+                Update Date
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+            @{
+                if(Model.Posts != null && Model.Posts.Count > 0)
+                {
+                int index = 1;
+                foreach (var post in Model.Posts)
+                {
+                    <tr class="text-center">
+                        <td>@index</td>
+                        <td>@post.Id</td>
+                        <td>@post.UserId</td>
+                        <td>@post.Title</td>
+                        <td>@post.Context</td>
+                        <td>@post.CoverImageUrl</td>
+                        <td>@post.CreateDate.ToString("dd/MM/yyyy")</td>
+                        <td>@post.UpdateTime?.ToString("dd/MM/yyyy")</td>
+                        @{
+                            // <td>
+                            //    <form method="post" asp-action="DeletePost" asp-controller="Posts" asp-area="Admin" asp-route-PostId="@post.Id">
+                            //         <button type="submit" class="btn btn-danger w-100">Delete</button>
+                            //    </form>
+                            // </td>
+                        }
+
+                    </tr>
+                    index++;
+                }
+                }
+            }
+    </tbody>
+</table>

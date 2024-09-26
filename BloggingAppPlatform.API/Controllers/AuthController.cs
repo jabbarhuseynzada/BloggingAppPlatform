@@ -18,10 +18,11 @@ namespace BloggingAppPlatform.API.Controllers
         [HttpPost("register")]
         public ActionResult Register(RegisterDto userForRegisterDto)
         {
-            var userExists = _authService.UserExists(userForRegisterDto.Email);
-            if (!userExists.Success)
+            var userExistsByMail = _authService.UserExists(userForRegisterDto.Email);
+            var userExistsByUsername = _authService.UserExistsByUsername(userForRegisterDto.Username);
+            if (!userExistsByMail.Success && !userExistsByUsername.Success)
             {
-                return BadRequest(userExists.Message);
+                return BadRequest("Email or Username is already used by another user");
             }
 
             var registerResult = _authService.Register(userForRegisterDto, userForRegisterDto.Password);

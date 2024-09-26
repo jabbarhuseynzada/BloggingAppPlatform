@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(BloggingAppDbContext))]
-    [Migration("20240910172914_BloggingAppDb")]
-    partial class BloggingAppDb
+    [Migration("20240925151209_dbcontext")]
+    partial class dbcontext
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -56,6 +56,16 @@ namespace DataAccess.Migrations
                         {
                             Id = 3,
                             Name = "Moderator"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "post.delete"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "comment.delete"
                         });
                 });
 
@@ -75,6 +85,9 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("JoinDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -87,6 +100,13 @@ namespace DataAccess.Migrations
 
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime>("UpdateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -110,6 +130,14 @@ namespace DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UserOperations");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            OperationClaimId = 2,
+                            UserId = 1
+                        });
                 });
 
             modelBuilder.Entity("Entities.Concrete.Comment", b =>
@@ -202,6 +230,31 @@ namespace DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PostImages");
+                });
+
+            modelBuilder.Entity("Entities.Concrete.UserFollower", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FollowedUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FollowerId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UsersFollower");
                 });
 #pragma warning restore 612, 618
         }

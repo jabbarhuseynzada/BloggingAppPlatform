@@ -29,6 +29,7 @@ namespace Business.Concrete
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly IMapper _mapper;
 
+
         [SecuredOperation("User,Admin,Moderator")]
         [ValidationAspect<CommentDto>(typeof(CommentValidator))]
         public IResult Add(CommentDto comment)
@@ -44,6 +45,8 @@ namespace Business.Concrete
             _commentDal.Add(addComment);
             return new SuccessResult("Comment added successfully");
         }
+
+
         [SecuredOperation("User,Admin,Moderator")]
         public IResult Delete(int commentId)
         {
@@ -62,12 +65,14 @@ namespace Business.Concrete
                 return new ErrorResult("You do not have permission to delete comment");
             }
         }
+
+
         [SecuredOperation("User,Admin,Moderator")]
         [ValidationAspect<UpdateCommentDto>(typeof(UpdateCommentValidator))]
         public IResult Update(UpdateCommentDto comment)
         {
             var userId = _contextAccessor?.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var userRole = _contextAccessor?.HttpContext?.User.FindFirstValue(ClaimTypes.Role);
+            //var userRole = _contextAccessor?.HttpContext?.User.FindFirstValue(ClaimTypes.Role);
             Comment updateComment = _mapper.Map<Comment>(comment);
             if (updateComment != null && updateComment.UserId == int.Parse(userId))
             {

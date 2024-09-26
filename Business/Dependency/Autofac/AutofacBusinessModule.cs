@@ -8,6 +8,7 @@ using Core.Helpers.Interceptors;
 using Core.Helpers.Security.JWT;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EF;
+using Microsoft.AspNetCore.Http;
 
 namespace Business.Dependency.Autofac
 {
@@ -18,6 +19,7 @@ namespace Business.Dependency.Autofac
             // Register your services and data access layers
             builder.RegisterType<UserManager>().As<IUserService>().SingleInstance();
             builder.RegisterType<EfUserDal>().As<IUserDal>().SingleInstance();
+            builder.RegisterType<EfUserFollowerDal>().As<IUserFollowerDal>().SingleInstance();
             //builder.RegisterType<PostManager>().As<IPostService>().InstancePerLifetimeScope();
             builder.RegisterType<PostManager>().As<IPostService>().SingleInstance();
             builder.RegisterType<EfPostDal>().As<IPostDal>().SingleInstance();
@@ -29,6 +31,7 @@ namespace Business.Dependency.Autofac
             builder.RegisterType<JwtHelper>().As<ITokenHelper>().SingleInstance();
             builder.RegisterType<BloggingAppDbContext>().As<BloggingAppDbContext>().SingleInstance();
             builder.RegisterType<AddPhotoHelper>().As<IAddPhotoHelperService>().SingleInstance();
+            builder.RegisterType<HttpContextAccessor>().As<IHttpContextAccessor>().SingleInstance();
 
 
             // Enable Interceptors
