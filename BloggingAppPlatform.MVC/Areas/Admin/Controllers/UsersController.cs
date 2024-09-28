@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using BloggingAppPlatform.MVC.Areas.Admin.ViewModels;
 using Business.Abstract;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BloggingAppPlatform.MVC.Areas.Admin.Controllers
 {
+    [Authorize(Policy = "AdminOrModerator")]
+    [Area("Admin")]
     public class UsersController : Controller
     {
         private readonly IMapper _mapper;
@@ -14,7 +17,6 @@ namespace BloggingAppPlatform.MVC.Areas.Admin.Controllers
             _mapper = mapper;
             _userService = userService;  
         }
-        [Area("Admin")]
         public IActionResult Index()
         {
             UserVM vm = new()
@@ -24,7 +26,6 @@ namespace BloggingAppPlatform.MVC.Areas.Admin.Controllers
             return View(vm);
         }
         [HttpPost]
-        [Area("Admin")]
         public IActionResult DeleteUser(int UserId)
         {
             var result = _userService.DeleteUser(UserId);

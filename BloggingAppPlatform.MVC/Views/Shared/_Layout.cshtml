@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BloggingAppPlatform.MVC.styles.css" asp-append-version="true" />
     <link href="https://bootswatch.com/5/sketchy/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
           integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
           crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -41,6 +40,15 @@
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Profile" asp-action="Index">Profile</a>
                             </li>
+                           
+                            @* Button for admin access if user is an admin or moderator *@
+                            @if (User.IsInRole("Admin") || User.IsInRole("Moderator"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Admin" asp-action="Index">Admin Panel</a>
+                                </li>
+                            }
+
                             <li class="nav-item">
                                 <form asp-controller="Auth" asp-action="Logout" method="post" class="d-inline">
                                     <button type="submit" class="nav-link btn btn-link text-light">Logout</button>
@@ -51,7 +59,6 @@
                 </div>
             </div>
         </nav>
-
     }
 
     <div class="container py-4">
@@ -103,10 +110,6 @@
             </div>
             <div class="col-6 text-center">
                 @RenderBody()
-                <div>
-                    Is Authenticated: @User.Identity.IsAuthenticated
-                </div>
-
             </div>
             <div class="col-3">
                 @* Render the search and follow sections only if the HideLayoutSections flag is not set *@

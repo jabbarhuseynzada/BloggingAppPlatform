@@ -45,16 +45,15 @@ namespace Business.Concrete
             return new SuccessResult("Post added successfully");
         }
 
-        [SecuredOperation("User,Admin,Moderator")]
-        public IResult Delete(int id)
+        [SecuredOperation("User,post.delete")]
+        public IResult Delete(int postId, int userId)
         {
-            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var deletePostClaim = _httpContextAccessor.HttpContext.User.ClaimRoles().Contains("post.delete");
 
-            var deletePost = _postDal.Get(p => p.Id == id && p.IsDeleted == false);
+            bool deletePostClaim = _httpContextAccessor.HttpContext.User.ClaimRoles().Contains("post.delete");
 
+            var deletePost = _postDal.Get(p => p.Id == postId && p.IsDeleted == false);
 
-            if (deletePost != null && (deletePostClaim || deletePost.UserId == int.Parse(userId)))
+            if (deletePost != null && (deletePostClaim || deletePost.UserId == userId))
             {
                 deletePost.IsDeleted = true;
                 deletePost.UpdateTime = DateTime.Now;
@@ -70,21 +69,20 @@ namespace Business.Concrete
 
         [SecuredOperation("User,Admin,Moderator")]
         [ValidationAspect<UpdatePostDto>(typeof(UpdatePostDtoValidator))]
-        public IResult Update(UpdatePostDto post)
+        public IResult Update(UpdatePostDto post, int userId)
         {
-            var userId = _httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-
             Post updatePost = _mapper.Map<Post>(post);
-            if (updatePost != null && updatePost.UserId == int.Parse(userId))
+
+            if (updatePost != null && updatePost.UserId == userId)
             {
-                updatePost.UserId = int.Parse(userId);
+                updatePost.UserId = userId; // Ensure the userId is set correctly
                 updatePost.UpdateTime = DateTime.Now;
                 _postDal.Update(updatePost);
-                return new SuccessResult("Post is succesfully updated");
+                return new SuccessResult("Post is successfully updated");
             }
             else
             {
-                return new ErrorResult("An error occured while updating post");
+                return new ErrorResult("An error occurred while updating the post");
             }
         }
 

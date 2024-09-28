@@ -7,8 +7,8 @@ namespace Business.Abstract
     public interface IPostService
     {
         IResult Add(AddPostDto post);
-        IResult Update(UpdatePostDto post);
-        IResult Delete(int id);
+        IResult Update(UpdatePostDto post, int userId);
+        IResult Delete(int postId, int userId);
         IDataResult<List<Post>> GetPostsByUserId(int userId);
         IDataResult<Post> GetPostById(int id);
         IDataResult<List<Post>> GetAllPosts();

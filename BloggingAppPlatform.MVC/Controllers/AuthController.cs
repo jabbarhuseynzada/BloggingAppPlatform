@@ -1,82 +1,24 @@
-﻿using Business.Abstract;
-using Entities.DTOs;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Business.Abstract;
+using Core.Helpers.Security.JWT;
+using Entities.DTOs;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
-namespace BloggingAppPlatform.MVC.Controllers
+namespace WebApp.Controllers
 {
     public class AuthController : Controller
     {
         private readonly IAuthService _authService;
+        private readonly IUserService _userService;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, IUserService userService)
         {
             _authService = authService;
+            _userService = userService;
         }
 
-        // GET: Register view
-        [HttpGet]
-        public IActionResult Register()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Register(RegisterDto userForRegisterDto)
-        {
-            if (!ModelState.IsValid)
-            {
-                ViewBag.ErrorMessage = "Please check the input fields.";
-                return View(userForRegisterDto);
-            }
-
-            var userExistsByMail = _authService.UserExists(userForRegisterDto.Email);
-            var userExistsByUsername = _authService.UserExistsByUsername(userForRegisterDto.Username);
-
-            if (!userExistsByMail.Success || !userExistsByUsername.Success)
-            {
-                ViewBag.ErrorMessage = "Email or Username is already used by another user.";
-                return View(userForRegisterDto);
-            }
-
-            var registerResult = _authService.Register(userForRegisterDto, userForRegisterDto.Password);
-            if (!registerResult.Success)
-            {
-                ViewBag.ErrorMessage = registerResult.Message;
-                return View(userForRegisterDto);
-            }
-
-            var result = _authService.CreateAccessToken(registerResult.Data);
-            if (result.Success)
-            {
-                // Save the JWT token in session
-                HttpContext.Session.SetString("JWTToken", result.Data.Token);
-
-                // Sign the user in using cookie authentication
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, registerResult.Data.Username),
-                    new Claim(ClaimTypes.Email, registerResult.Data.Email)
-                };
-
-                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                var authProperties = new AuthenticationProperties { IsPersistent = true };
-
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
-
-                ViewBag.SuccessMessage = "Registration successful!";
-                return RedirectToAction("Index", "Home");
-            }
-
-            ViewBag.ErrorMessage = result.Message;
-            return View(userForRegisterDto);
-        }
-
-        // GET: Login view
         [HttpGet]
         public IActionResult Login()
         {
@@ -92,46 +34,55 @@ namespace BloggingAppPlatform.MVC.Controllers
                 return View(loginDTO);
             }
 
+            // Step 1: Validate user credentials
             var userToLogin = _authService.Login(loginDTO);
             if (!userToLogin.Success)
             {
-                ViewBag.ErrorMessage = userToLogin.Message;
+                // Display specific error message
+                ViewBag.ErrorMessage = userToLogin.Message; // Pass the error message to ViewBag
                 return View(loginDTO);
             }
 
+            // Step 2: Generate JWT token (for future API use if needed)
             var result = _authService.CreateAccessToken(userToLogin.Data);
-            if (result.Success)
+            if (!result.Success)
             {
-                // Save the JWT token in session
-                HttpContext.Session.SetString("JWTToken", result.Data.Token);
-
-                // Sign the user in using cookie authentication
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, userToLogin.Data.Username),
-                    new Claim(ClaimTypes.Email, userToLogin.Data.Email)
-                };
-
-                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                var authProperties = new AuthenticationProperties { IsPersistent = true };
-
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
-
-                ViewBag.SuccessMessage = "Login successful!";
-                return RedirectToAction("Index", "Home");
+                ViewBag.ErrorMessage = result.Message; // Pass the token generation error
+                return View(loginDTO);
             }
 
-            ViewBag.ErrorMessage = result.Message;
-            return View(loginDTO);
+            // Step 3: Get user roles from the service or the token (if stored in claims)
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, userToLogin.Data.Username),
+                new Claim(ClaimTypes.Email, userToLogin.Data.Email),
+                new Claim("userId", userToLogin.Data.Id.ToString()), // User ID
+            };
+
+            var roles = _userService.GetClaims(userToLogin.Data);  // Assuming GetClaims returns roles
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role.Name));
+            }
+
+            // Step 4: Create ClaimsIdentity and sign in with cookie authentication
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var authProperties = new AuthenticationProperties { IsPersistent = true }; // Persistent cookie
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+
+            // Step 5: Redirect user to home or another page after successful login
+            ViewBag.SuccessMessage = "Login successful!";
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
-            // Sign the user out
+            // Log the user out
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            HttpContext.Session.Remove("JWTToken"); // Clear JWT token from session
-            return RedirectToAction("Login", "Auth");
+            TempData["SuccessMessage"] = "You have been logged out.";
+            return RedirectToAction("Login");
         }
     }
 }

@@ -43,6 +43,10 @@
             <th>
                 Update Date
             </th>
+            <th>
+                sdjkf
+
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -62,11 +66,11 @@
                         <td>@post.CreateDate.ToString("dd/MM/yyyy")</td>
                         <td>@post.UpdateTime?.ToString("dd/MM/yyyy")</td>
                         @{
-                            // <td>
-                            //    <form method="post" asp-action="DeletePost" asp-controller="Posts" asp-area="Admin" asp-route-PostId="@post.Id">
-                            //         <button type="submit" class="btn btn-danger w-100">Delete</button>
-                            //    </form>
-                            // </td>
+                             <td>
+                                <form method="post" asp-action="DeletePost" asp-controller="Posts" asp-area="Admin" asp-route-PostId="@post.Id">
+                                     <button type="submit" class="btn btn-danger w-100">Delete</button>
+                                </form>
+                             </td>
                         }
 
                     </tr>

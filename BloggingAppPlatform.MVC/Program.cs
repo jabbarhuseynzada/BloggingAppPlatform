@@ -2,18 +2,21 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using AutoMapper;
 using Business.Dependency.Autofac;
+using Core.DependencyResolve;
+using Core.Extensions;
+using Core.Helpers.IoC;
 using Core.Helpers.Security.Encryption;
 using Core.Helpers.Security.JWT;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddHttpContextAccessor();
-
 // Add services to the container.
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllersWithViews();
 
 // Register AutoMapper
@@ -46,7 +49,7 @@ builder.Services.AddAuthentication(options =>
 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
 {
     options.LoginPath = "/Auth/Login"; // Path to redirect when not authenticated
-    options.LogoutPath = "/Auth/Logout";
+    options.LogoutPath = "/Auth/Logout"; // Path to redirect on logout
     options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Cookie expiration
 })
 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
@@ -59,12 +62,24 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidIssuer = tokenOptions.Issuer,
         ValidAudience = tokenOptions.Audience,
-        RequireExpirationTime = true
+        RequireExpirationTime = true,
+        ValidateLifetime = true // Validate token expiration
     };
 });
 
-builder.Services.AddAuthorization();
-builder.Services.AddControllers();
+// Add authorization
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOrModerator", policy =>
+        policy.RequireAssertion(context =>
+            context.User.HasClaim(c =>
+                c.Type == ClaimTypes.Role && (c.Value == "Admin" || c.Value == "Moderator"))));
+});
+
+
+// Dependency injection for core services
+ServiceTool.Create(builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>());
+builder.Services.AddDependencyResolvers(new[] { new CoreModule() });
 
 var app = builder.Build();
 
@@ -80,15 +95,16 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// Enable session middleware
-app.UseSession(); // Ensure this is before UseAuthentication()
+// Enable session middleware before authentication
+app.UseSession();
 
 // Enable authentication and authorization
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseStatusCodePagesWithReExecute("/Error/{0}");
+app.UseStatusCodePagesWithReExecute("/Home/Error/{0}");
 
+// Map controller routes
 app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
@@ -97,6 +113,19 @@ app.MapControllerRoute(
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}"
+);
+
+// Login and Logout routes
+app.MapControllerRoute(
+    name: "login",
+    pattern: "Auth/Login",
+    defaults: new { controller = "Auth", action = "Login" }
+);
+
+app.MapControllerRoute(
+    name: "logout",
+    pattern: "Auth/Logout",
+    defaults: new { controller = "Auth", action = "Logout" }
 );
 
 app.Run();

@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Core.Helpers.Security.JWT;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,25 +31,56 @@ namespace BloggingAppPlatform.API.Controllers
         [HttpPost("updatePost")]
         public IActionResult UpdatePost(UpdatePostDto post)
         {
-            _postService.Update(post);
-            if (post != null)
-                return Ok("Succesfully uptaded");
+            var token = Request.Cookies["auth_token"];
+
+            var userId = JwtHelper.GetUserIdFromToken(token);
+
+            if (!userId.HasValue)
+            {
+                return BadRequest("Invalid user ID.");
+            }
+
+            var result = _postService.Update(post, userId.Value); // Pass userId to the service
+
+            if (result.Success)
+            {
+                return Ok("Successfully updated");
+            }
             else
-                return BadRequest("xeta bas verdi");
+            {
+                return BadRequest(result.Message);
+            }
         }
         [HttpPost("deletePost")]
-        public IActionResult DeletePost(int id)
+        public IActionResult DeletePost(int postId)
         {
-            var post = _postService.Delete(id);
-            if (post.Success)
+            // Get the JWT token from the auth_token cookie
+            var token = Request.Cookies["auth_token"];
+
+            // Get the userId from the token using the JwtTokenHandler
+            var userId = JwtHelper.GetUserIdFromToken(token);
+
+            if (userId.HasValue)
             {
-                return Ok(post.Message);
+                var result = _postService.Delete(postId, userId.Value);
+
+                if (result.Success)
+                {
+                    return Ok(result.Message);
+                }
+                else
+                {
+                    return BadRequest(result.Message);
+                }
             }
             else
             {
-                return BadRequest(post.Message);
+                // Enhanced error message for debugging
+                return BadRequest($"Invalid user ID. UserId: {userId}");
             }
         }
+
+
         [HttpGet("getPostsByUserId")]
         public IActionResult GetPostsByUserId(int userId)
         {
