@@ -11,6 +11,7 @@ namespace Business.Abstract
         IResult AddOperationClaimToUser(int userId, int operationClaimId);
         List<OperationClaim> GetClaims(User user);
         void Add(User user);
+        User GetUserById(int userId);
         User GetByMail(string email);
         User GetByUsername(string username);
         IDataResult<List<UserDto>> GetAllUsers();

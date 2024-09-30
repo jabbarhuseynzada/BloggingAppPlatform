@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class dbcontext : Migration
+    public partial class dbBAP : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -68,7 +68,6 @@ namespace DataAccess.Migrations
                     UserId = table.Column<int>(type: "int", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Context = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CoverImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
@@ -144,7 +143,13 @@ namespace DataAccess.Migrations
             migrationBuilder.InsertData(
                 table: "UserOperations",
                 columns: new[] { "Id", "OperationClaimId", "UserId" },
-                values: new object[] { 1, 2, 1 });
+                values: new object[,]
+                {
+                    { 1, 2, 1 },
+                    { 2, 3, 1 },
+                    { 3, 4, 1 },
+                    { 4, 5, 1 }
+                });
         }
 
         /// <inheritdoc />

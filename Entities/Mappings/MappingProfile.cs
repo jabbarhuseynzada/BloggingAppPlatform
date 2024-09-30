@@ -15,8 +15,14 @@ public class MappingProfile : Profile
         CreateMap<UserDto, User>();
         
         //Post
-        CreateMap<AddPostDto, Post>();
-        CreateMap<Post, AddPostDto>();
+        CreateMap<AddPostDto, Post>()
+            .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
+            .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
+            .ForMember(dest => dest.Context, opt => opt.MapFrom(src => src.Context));
+        CreateMap<Post, AddPostDto>()
+            .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
+            .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
+            .ForMember(dest => dest.Context, opt => opt.MapFrom(src => src.Context));
         CreateMap<UpdatePostDto, Post>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.PostId));
         //Comment
@@ -26,5 +32,10 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.CommentTime, opt => opt.MapFrom(src => src.CreateDate));
         CreateMap<UpdateCommentDto, Comment>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.CommentId));
+        CreateMap<GetCommentDto, Comment>()
+            .ForMember(dest => dest.CreateDate, opt => opt.MapFrom(src => src.CommentTime));
+        CreateMap<Comment, GetCommentDto>()
+            .ForMember(dest => dest.CommentTime, opt => opt.MapFrom(src => src.CreateDate));
+   
     }
 }

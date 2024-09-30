@@ -22,7 +22,7 @@ namespace BloggingAppPlatform.MVC.Areas.Admin.Controllers
         {
             PostVM vm = new()
             {
-                Posts = _postService.GetAllPosts().Data,
+                Posts = _postService.GetPosts().Data,
             };
             return View(vm);
         }

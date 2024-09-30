@@ -7,6 +7,7 @@ using Core.Extensions;
 using Core.Helpers.IoC;
 using Core.Helpers.Security.Encryption;
 using Core.Helpers.Security.JWT;
+using Entities.Mappings;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -20,7 +21,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllersWithViews();
 
 // Register AutoMapper
-builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+//builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 // Set Autofac as the DI container
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory()).ConfigureContainer<ContainerBuilder>(containerBuilder =>
@@ -67,6 +68,8 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+
+
 // Add authorization
 builder.Services.AddAuthorization(options =>
 {
@@ -80,6 +83,12 @@ builder.Services.AddAuthorization(options =>
 // Dependency injection for core services
 ServiceTool.Create(builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>());
 builder.Services.AddDependencyResolvers(new[] { new CoreModule() });
+
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddProfile<MappingProfile>(); // Adjust the namespace and profile name
+}, Assembly.GetExecutingAssembly(), typeof(MappingProfile).Assembly);
+
 
 var app = builder.Build();
 

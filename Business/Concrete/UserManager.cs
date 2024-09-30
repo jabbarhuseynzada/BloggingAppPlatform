@@ -86,6 +86,11 @@ namespace Business.Concrete
             }
         }
 
+        public User GetUserById(int userId)
+        {
+            return _userDal.Get(u => u.Id == userId);
+        }
+
 
         public User GetByMail(string email)
         {

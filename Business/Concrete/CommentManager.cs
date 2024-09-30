@@ -17,43 +17,47 @@ namespace Business.Concrete
 {
     public class CommentManager : ICommentService
     {
-        public CommentManager(ICommentDal commentDal, IHttpContextAccessor contextAccessor, IMapper mapper, IPostDal postDal)
+        public CommentManager(ICommentDal commentDal, IHttpContextAccessor contextAccessor, IMapper mapper, IPostDal postDal, IUserService userService)
         {
             _commentDal = commentDal;
             _postDal = postDal;
             _contextAccessor = contextAccessor;
             _mapper = mapper;
+            _userService = userService;
+
         }
         private readonly ICommentDal _commentDal;
         private readonly IPostDal _postDal;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly IMapper _mapper;
+        private readonly IUserService _userService;
 
 
         [SecuredOperation("User,Admin,Moderator")]
         [ValidationAspect<CommentDto>(typeof(CommentValidator))]
         public IResult Add(CommentDto comment)
         {
-            var userId = _contextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            //var userId = _contextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
             Comment addComment = _mapper.Map<Comment>(comment);
-
             addComment.UpdateTime = DateTime.Now;
             addComment.CreateDate = DateTime.Now;
             addComment.IsDeleted = false;
-            addComment.UserId = int.Parse(userId);
+            //addComment.UserId = int.Parse(userId);
+
             _commentDal.Add(addComment);
             return new SuccessResult("Comment added successfully");
         }
 
 
+
         [SecuredOperation("User,Admin,Moderator")]
-        public IResult Delete(int commentId)
+        public IResult Delete(int commentId, int _userId)
         {
-            var userId = _contextAccessor?.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = _userId;
             var deleteCommentClaim = _contextAccessor.HttpContext.User.ClaimRoles().Contains("comment.delete");
             var deleteComment = _commentDal.Get(c => c.Id == commentId && c.IsDeleted == false);
-            if (deleteComment != null && (deleteComment.UserId == int.Parse(userId) || _postDal.Get(p => p.Id == deleteComment.PostId).UserId == int.Parse(userId) || deleteCommentClaim == true))
+            if (deleteComment != null && (deleteComment.UserId == userId || _postDal.Get(p => p.Id == deleteComment.PostId).UserId == userId || deleteCommentClaim == true))
             {
                 deleteComment.IsDeleted = true;
                 deleteComment.UpdateTime = DateTime.Now;
@@ -118,14 +122,29 @@ namespace Business.Concrete
                 return new ErrorDataResult<List<CommentDto>>(commentDtos, "An error occured while posts were fetching");
         }
 
-        public IDataResult<List<CommentDto>> GetCommentsByPostId(int postId)
+        public IDataResult<List<GetCommentDto>> GetCommentsByPostId(int postId)
         {
             var comments = _commentDal.GetAll(c => c.PostId == postId && c.IsDeleted == false);
-            var commentDtos = _mapper.Map<List<CommentDto>>(comments);
-            if (commentDtos.Count > 0)
-                return new SuccessDataResult<List<CommentDto>>(commentDtos, "Comment sucessfully fetched");
+            //var commentDtos = _mapper.Map<List<GetCommentDto>>(comments);
+            List<GetCommentDto> result = new List<GetCommentDto>();
+            foreach (var comment in comments)
+            {
+                var user = _userService.GetUserById(comment.UserId);
+                GetCommentDto commentDto = new() 
+                { 
+                    CommentId = comment.Id,
+                    UserId = comment.UserId,
+                    PostId = comment.PostId,
+                    CommentText = comment.CommentText,
+                    CommentTime = comment.UpdateTime,
+                    Username = user.Username
+                };
+                result.Add(commentDto);
+            }
+            if (result.Count > 0)
+                return new SuccessDataResult<List<GetCommentDto>>(result, "Comment sucessfully fetched");
             else
-                return new ErrorDataResult<List<CommentDto>>(commentDtos, "An error occured while posts were fetching");
+                return new ErrorDataResult<List<GetCommentDto>>(result, "An error occured while posts were fetching");
         }
     }
 }

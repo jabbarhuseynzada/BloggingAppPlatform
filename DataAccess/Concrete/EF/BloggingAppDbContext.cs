@@ -60,6 +60,24 @@ namespace DataAccess.Concrete.EF
                      Id = 1,
                      UserId = 1,
                      OperationClaimId = 2
+                 },
+                 new UserOperationClaim
+                 {
+                     Id = 2,
+                     UserId = 1,
+                     OperationClaimId = 3
+                 },
+                 new UserOperationClaim
+                 {
+                     Id = 3,
+                     UserId = 1,
+                     OperationClaimId = 4
+                 },
+                 new UserOperationClaim
+                 {
+                     Id = 4,
+                     UserId = 1,
+                     OperationClaimId = 5
                  }
             );
         }

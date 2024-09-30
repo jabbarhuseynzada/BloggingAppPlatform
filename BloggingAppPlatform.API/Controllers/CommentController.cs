@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Core.Helpers.Security.JWT;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,7 +30,9 @@ namespace BloggingAppPlatform.API.Controllers
         [HttpPost("deleteComment")]
         public IActionResult DeleteComment(int Id)
         {
-            var comment = _commentService.Delete(Id);
+            var token = Request.Cookies["auth_token"];
+            var userId = JwtHelper.GetUserIdFromToken(token).Value;
+            var comment = _commentService.Delete(Id, userId);
             if (comment != null)
             {
                 return Ok(comment.Message);

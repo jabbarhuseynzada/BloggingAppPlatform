@@ -20,10 +20,12 @@
         </div>
         <div class="dropdown">
             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                Hello, John Doe
+                Hello, @User.Identity.Name
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <li><a class="dropdown-item" href="#">Sign out</a></li>
+                <form asp-area="" asp-controller="Auth" asp-action="Logout" method="post" class="d-inline">
+                    <button type="submit" class="nav-link btn btn-link text-light">Logout</button>
+                </form>
             </ul>
         </div>
     </nav>

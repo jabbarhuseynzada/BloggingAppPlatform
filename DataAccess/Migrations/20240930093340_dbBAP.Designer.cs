@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(BloggingAppDbContext))]
-    [Migration("20240925151209_dbcontext")]
-    partial class dbcontext
+    [Migration("20240930093340_dbBAP")]
+    partial class dbBAP
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -137,6 +137,24 @@ namespace DataAccess.Migrations
                             Id = 1,
                             OperationClaimId = 2,
                             UserId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            OperationClaimId = 3,
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            OperationClaimId = 4,
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            OperationClaimId = 5,
+                            UserId = 1
                         });
                 });
 
@@ -181,10 +199,6 @@ namespace DataAccess.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Context")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CoverImageUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

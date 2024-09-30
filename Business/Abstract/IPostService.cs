@@ -9,8 +9,11 @@ namespace Business.Abstract
         IResult Add(AddPostDto post);
         IResult Update(UpdatePostDto post, int userId);
         IResult Delete(int postId, int userId);
-        IDataResult<List<Post>> GetPostsByUserId(int userId);
+        IDataResult<List<GetPostDto>> GetPostsByUserId(int userId);
         IDataResult<Post> GetPostById(int id);
-        IDataResult<List<Post>> GetAllPosts();
+        IDataResult<List<GetPostDto>> GetAllPosts(int page = 1, int pageSize = 10);
+        IDataResult<List<Post>> GetPosts();
+        int GetPostCount();
+        
     }
 }

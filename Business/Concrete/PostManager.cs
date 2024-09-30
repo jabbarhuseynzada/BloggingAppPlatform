@@ -10,6 +10,7 @@ using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
+using System.Drawing.Printing;
 using System.Security.Claims;
 using IResult = Core.Helpers.Results.Abstract.IResult;
 
@@ -17,25 +18,23 @@ namespace Business.Concrete
 {
     public class PostManager : IPostService
     {
-        public PostManager(IPostDal postDal, IHttpContextAccessor httpContextAccessor, IMapper mapper)
+        public PostManager(IPostDal postDal, IHttpContextAccessor httpContextAccessor, IMapper mapper, IUserService userService)
         {
             _postDal = postDal;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
+            _userService = userService;
         }
         private readonly IPostDal _postDal;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
+        private readonly IUserService _userService;
 
-        [SecuredOperation("User,Admin,Moderator")]
+        [SecuredOperation("User")]
         [ValidationAspect<AddPostDto>(typeof(PostValidator))]
-        public IResult Add(AddPostDto post)
+        public IResult Add(AddPostDto postDto)
         {
-            var userId = _httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-
-            Post addPost = _mapper.Map<Post>(post);
-
-            addPost.UserId = int.Parse(userId);
+            Post addPost = _mapper.Map<Post>(postDto);
             addPost.CreateDate = DateTime.Now;
             addPost.IsDeleted = false;
             addPost.UpdateTime = DateTime.Now;
@@ -86,17 +85,37 @@ namespace Business.Concrete
             }
         }
 
-        public IDataResult<List<Post>> GetPostsByUserId(int userId)
+        public IDataResult<List<GetPostDto>> GetPostsByUserId(int userId)
         {
-            var posts = _postDal.GetAll(p => p.UserId == userId && p.IsDeleted == false);
+            var posts = _postDal.GetAll(p => p.IsDeleted == false && p.UserId == userId)
+                               .OrderByDescending(p => p.UpdateTime);
 
-            if (posts.Count > 0)
+            
+
+            List<GetPostDto> result = new List<GetPostDto>();
+
+            foreach (var post in posts)
             {
-                return new SuccessDataResult<List<Post>>(posts, "This user's posts successfully fetched");
+                var user = _userService.GetUserById(post.UserId);
+                GetPostDto postDto = new()
+                {
+                    UserId = user.Id,
+                    Context = post.Context,
+                    PostId = post.Id,
+                    Title = post.Title,
+                    Username = user.Username,
+                    Date = post.UpdateTime.HasValue ? post.UpdateTime.Value.ToString("dd/MM/yyyy") : ""
+                };
+
+                result.Add(postDto);
+            }
+            if (result.Count > 0)
+            {
+                return new SuccessDataResult<List<GetPostDto>>(result, "This user's posts successfully fetched");
             }
             else
             {
-                return new ErrorDataResult<List<Post>>(posts, "This is not foun or not shared any post");
+                return new ErrorDataResult<List<GetPostDto>>(result, "This is not foun or not shared any post");
             }
         }
 
@@ -114,14 +133,62 @@ namespace Business.Concrete
             }
         }
 
-        public IDataResult<List<Post>> GetAllPosts()
+        public IDataResult<List<GetPostDto>> GetAllPosts(int page = 1, int pageSize = 5)
         {
-            var result = _postDal.GetAll(p => p.IsDeleted == false);
+            // Get all posts ordered by UpdateTime descending (newest to oldest)
+            var posts = _postDal.GetAll(p => p.IsDeleted == false)
+                                .OrderByDescending(p => p.UpdateTime);
+
+            // Apply pagination (Skip and Take)
+            var pagedPosts = posts.Skip((page - 1) * pageSize)
+                                  .Take(pageSize)
+                                  .ToList();
+
+            List<GetPostDto> result = new List<GetPostDto>();
+
+            foreach (var post in pagedPosts)
+            {
+                var user = _userService.GetUserById(post.UserId);
+                GetPostDto postDto = new()
+                {
+                    PostId = post.Id,
+                    UserId = user.Id,
+                    Context = post.Context,
+                    Title = post.Title,
+                    Username = user.Username,
+                    Date = post.UpdateTime.HasValue ? post.UpdateTime.Value.ToString("dd/MM/yyyy") : ""
+                };
+
+                result.Add(postDto);
+            }
 
             if (result.Count > 0)
-                return new SuccessDataResult<List<Post>>(result, "All the posts succesfully fetched");
+            {
+                return new SuccessDataResult<List<GetPostDto>>(result, "Posts successfully fetched");
+            }
             else
-                return new ErrorDataResult<List<Post>>(result, "An error occured while posts were fetching");
+            {
+                return new ErrorDataResult<List<GetPostDto>>(result, "No posts found");
+            }
         }
+
+        public IDataResult<List<Post>> GetPosts()
+        {
+            var result = _postDal.GetAll(p => p.IsDeleted == false);
+            if(result.Count > 0)
+            {
+                return new SuccessDataResult<List<Post>>(result, "All the posts succesfully fetched");
+            }
+            else
+            {
+                return new ErrorDataResult<List<Post>>(result, "An error occured while posts were fetching");
+            }
+            throw new NotImplementedException();
+        }
+        public int GetPostCount()
+        {
+            return _postDal.GetAll(p => p.IsDeleted == false).Count;
+        }
+
     }
 }

@@ -18,6 +18,11 @@ namespace BloggingAppPlatform.API.Controllers
         [HttpPost("addPost")]
         public IActionResult AddPost(AddPostDto post)
         {
+            var token = Request.Cookies["auth_token"];
+
+            var userId = JwtHelper.GetUserIdFromToken(token);
+            post.UserId = userId.Value;
+            //post.CoverImageUrl = "bosdu";
             _postService.Add(post);
             if (post != null)
             {
