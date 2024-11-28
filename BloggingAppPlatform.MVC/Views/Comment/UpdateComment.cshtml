@@ -1,0 +1,19 @@
+﻿@model BloggingAppPlatform.MVC.ViewModels.UpdateCommentVM
+<div class="row">
+    <form asp-action="UpdateComment" asp-controller="Comment" asp-area="" method="post">
+        @if (ViewBag.ErrorMessage != null)
+        {
+            <div class="alert alert-danger">
+                @ViewBag.ErrorMessage
+            </div>
+        }
+        <input type="hidden" asp-for="@Model.CommentDto.CommentId" name="CommentId" value="@Model.CommentDto.CommentId" />
+        <div class="form-group">
+            <input type="text" asp-for="@Model.CommentDto.CommentText" placeholder="Comment" name="CommentText" class="form-control" />
+            <span asp-validation-for="@Model.CommentDto.CommentText" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-dark">Update</button>
+        </div>
+    </form>
+</div>

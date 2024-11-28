@@ -17,6 +17,9 @@ namespace BloggingAppPlatform.API.Controllers
         [HttpPost("addComment")]
         public IActionResult AddComment(CommentDto comment)
         {
+            var token = Request.Cookies["auth_token"];
+            var userId = JwtHelper.GetUserIdFromToken(token).Value;
+            comment.UserId = userId;
             var addedComment = _commentService.Add(comment);
             if (addedComment != null)
             {
@@ -45,7 +48,9 @@ namespace BloggingAppPlatform.API.Controllers
         [HttpPost("updateComment")]
         public IActionResult UpdateComment(UpdateCommentDto commentDto)
         {
-            var comment = _commentService.Update(commentDto);
+            var token = Request.Cookies["auth_token"];
+            var userId = JwtHelper.GetUserIdFromToken(token).Value;
+            var comment = _commentService.Update(commentDto, userId);
             if (comment != null)
             {
                 return Ok(comment.Message);

@@ -1,4 +1,6 @@
 ﻿using Business.Abstract;
+using Core.Helpers.Security.JWT;
+using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BloggingAppPlatform.API.Controllers
@@ -9,9 +11,9 @@ namespace BloggingAppPlatform.API.Controllers
     {
         private readonly IUserService _userService = userService;
         [HttpPost("addOperationClaim")]
-        public IActionResult AddOperationClaimToUser(int userId, int claimId)
+        public IActionResult AddOperationClaimToUser(string username, string operationClaimName)
         {
-            var result = _userService.AddOperationClaimToUser(userId, claimId);
+            var result = _userService.AddOperationClaimToUser(username, operationClaimName);
             if (result.Success)
             {
                 return Ok(result.Message);
@@ -21,12 +23,22 @@ namespace BloggingAppPlatform.API.Controllers
                 return BadRequest(result.Message);
             }
         }
+        [HttpPost("updateUser")]
+        public IActionResult UpdateUser(UpdateUserDto userDto)
+        {
+            var token = Request.Cookies["auth_token"];
 
-        //[HttpPost("followUser")]
-        //public IActionResult FollowUser(int userId)
-        //{
-        //    var result = _userService.FollowUser(userId);
-        //}
+            var userId = JwtHelper.GetUserIdFromToken(token).Value;
+            var result = _userService.UpdateUser(userDto, userId);
+            if (result.Success)
+            {
+                return Ok(result.Message);
+            }
+            else 
+            { 
+                return BadRequest(result.Message); 
+            }
+        }
 
         [HttpGet("GetUsers")]
         public IActionResult GetAllUsers()

@@ -1,8 +1,26 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model BloggingAppPlatform.MVC.Areas.Admin.ViewModels.HomeVM
 <h1>
-    home
+    Dashboard
 </h1>
+<div class="row">
+    <div>
+        <h3>
+            User Count:
+        </h3> <br />
+        <p>@Model.UserCount</p>
+    </div>
+    <hr />
+    <div>
+        <h3>
+            Post Count:
+        </h3> <br />
+        <p>@Model.PostCount</p>
+    </div>
+    <hr />
+    <div>
+        <h3>
+            Comment Count:
+        </h3> <br />
+        <p>@Model.CommentCount</p>
+    </div>
+</div>

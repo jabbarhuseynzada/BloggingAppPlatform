@@ -1,0 +1,41 @@
+﻿@model BloggingAppPlatform.MVC.ViewModels.PostVM
+
+<h2>@Model.user.Username Profile</h2>
+<p>Total Posts: @Model.Count</p>
+<p>Follower Count: @Model.FollowerCount</p>
+@if (Model.IsFollow)
+{
+    <form asp-action="UnfollowUser" asp-controller="Follow" asp-route-unfollowedUserId="@Model.user.Id" method="post">
+        <button type="submit" class="btn btn-dark">
+            Unfollow User
+        </button>
+    </form>
+}
+else
+{
+<form asp-action="FollowUser" asp-controller="Follow" asp-route-followedUserId="@Model.user.Id" method="post">
+    <button type="submit" class="btn btn-dark">
+        Follow User
+    </button>
+</form>
+}
+
+<div>
+    @if (Model.PostsByUser != null && Model.PostsByUser.Count > 0)
+    {
+        foreach (var post in Model.PostsByUser)
+        {
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">@post.Title</h5>
+                    <p class="card-text">@post.Context</p>
+                    <small class="text-muted">Posted on @post.Date</small>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p>No posts found for this user.</p>
+    }
+</div>

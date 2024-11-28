@@ -21,6 +21,8 @@ namespace Business.Dependency.Autofac
             builder.RegisterType<EfUserDal>().As<IUserDal>().SingleInstance();
             builder.RegisterType<EfUserFollowerDal>().As<IUserFollowerDal>().SingleInstance();
             //builder.RegisterType<PostManager>().As<IPostService>().InstancePerLifetimeScope();
+            builder.RegisterType<ReportManager>().As<IReportService>().SingleInstance();
+            builder.RegisterType<EfReportDal>().As<IReportDal>().SingleInstance();
             builder.RegisterType<PostManager>().As<IPostService>().SingleInstance();
             builder.RegisterType<EfPostDal>().As<IPostDal>().SingleInstance();
             builder.RegisterType<CommentManager>().As<ICommentService>().SingleInstance();

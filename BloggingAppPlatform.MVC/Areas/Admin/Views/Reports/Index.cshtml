@@ -1,0 +1,69 @@
+﻿@model BloggingAppPlatform.MVC.Areas.Admin.ViewModels.ReportVM
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Message"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+<h1>Reports</h1>
+
+<table class="table table-bordered table-striped overflow-scroll">
+    <thead>
+        <tr class="text-center">
+            <th>#</th>
+            <th>Report ID</th>
+            <th>Reported By</th>
+            <th>Reported User</th>
+            <th>Photo</th>
+            <th>Reported Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Reports != null && Model.Reports.Count > 0)
+        {
+            int index = 1;
+            foreach (var report in Model.Reports)
+            {
+                <tr class="text-center">
+                    <td>@index</td>
+                    <td>@report.Id</td>
+                    <td>@report.ReporetedBy</td>
+                    <td>@report.ReportedUser</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(report.PhotoUrl))
+                        {
+                            <img src="@report.PhotoUrl" alt="Photo" width="100" height="100" />
+                        }
+                        else
+                        {
+                            <span>No Photo</span>
+                        }
+                    </td>
+                    <td>@report.CreateDate.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        <form method="post" asp-action="DeleteReport" asp-controller="Reports" asp-area="Admin" asp-route-id="@report.Id">
+                            <button type="submit" class="btn btn-danger w-100">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                index++;
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="7" class="text-center">No reports found.</td>
+            </tr>
+        }
+    </tbody>
+</table>

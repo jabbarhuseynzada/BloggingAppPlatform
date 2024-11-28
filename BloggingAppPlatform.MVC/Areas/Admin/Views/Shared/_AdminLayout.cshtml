@@ -23,8 +23,11 @@
                 Hello, @User.Identity.Name
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <form asp-area="" asp-controller="Home" asp-action="Index" method="post" class="d-inline">
+                    <button type="submit" class="nav-link btn btn-link text-dark">Home</button>
+                </form>
                 <form asp-area="" asp-controller="Auth" asp-action="Logout" method="post" class="d-inline">
-                    <button type="submit" class="nav-link btn btn-link text-light">Logout</button>
+                    <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
                 </form>
             </ul>
         </div>
@@ -35,8 +38,13 @@
                 <div class="position-sticky">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link" aria-current="page" href="/Admin/Dashboard">
-                                Dashboard
+                            <a class="nav-link" href="/Admin/Home">
+                                Home
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Admin/Reports">
+                                Reports
                             </a>
                         </li>
                         <li class="nav-item">
@@ -54,6 +62,12 @@
                                 Comments
                             </a>
                         </li>
+                        @if (User.IsInRole("Admin") || User.IsInRole("add.opclaim"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="/Admin/OpClaims">Operation Claim</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </nav>

@@ -1,0 +1,58 @@
+﻿@model BloggingAppPlatform.MVC.Areas.Admin.ViewModels.OpClaimVM
+<h1>Operation Claims</h1>
+<div class="row">
+    <div class="col-6">
+        <form asp-action="AddOpClaim" asp-controller="OpClaims" asp-area="Admin" method="post">
+            @if (ViewBag.ErrorMessage != null)
+            {
+                <div class="alert alert-danger">
+                    @ViewBag.ErrorMessage
+                </div>
+            }
+
+            <div class="form-group">
+                <input type="text" asp-for="@Model.opClaim.Username" placeholder="Username" name="Username" class="form-control" />
+                @* <span asp-validation-for="@Model" class="text-danger"></span> *@
+            </div>
+            <div class="form-group mb-3">
+                <textarea class="form-control" asp-for="@Model.opClaim.ClaimName" name="ClaimName" id="idea" placeholder="Claim name" rows="3"></textarea>
+                @* <span asp-validation-for="@Model.opClaim.ClaimName" class="text-danger"></span> *@
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-dark">Update</button>
+            </div>
+        </form>
+    </div>
+    <div class="col-6"> 
+        @if(ViewBag.ErrorMessage != null)
+        {
+            <div class="alert alert-danger">
+                @ViewBag.ErrorMessage
+            </div>
+        }
+        <table class="table table-bordered table-striped overflow-scroll">
+            <thead>
+                <tr>
+                    <th>
+                        Id
+                    </th>
+                    <th>Claim Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if(Model.OperationClaims != null)
+                {
+                    foreach(var claim in Model.OperationClaims)
+                    {
+                        <tr class="text-center">
+                            <td>@claim.Id</td>
+                            <td>@claim.Name</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+ 

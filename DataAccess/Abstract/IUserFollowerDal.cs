@@ -10,5 +10,6 @@ namespace DataAccess.Abstract
 {
     public interface IUserFollowerDal : IBaseRepository<UserFollower>
     {
+        public void DeleteFollow(UserFollower userFollower);
     }
 }

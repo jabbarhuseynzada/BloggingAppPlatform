@@ -63,6 +63,11 @@ namespace DataAccess.Migrations
                         {
                             Id = 5,
                             Name = "comment.delete"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "add.opclaim"
                         });
                 });
 
@@ -220,7 +225,7 @@ namespace DataAccess.Migrations
                     b.ToTable("Posts");
                 });
 
-            modelBuilder.Entity("Entities.Concrete.PostImage", b =>
+            modelBuilder.Entity("Entities.Concrete.Report", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -228,19 +233,27 @@ namespace DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ImgUrl")
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PhotoUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsFeatured")
-                        .HasColumnType("bit");
+                    b.Property<string>("ReporetedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PostId")
-                        .HasColumnType("int");
+                    b.Property<string>("ReportedUser")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("PostImages");
+                    b.ToTable("Reports");
                 });
 
             modelBuilder.Entity("Entities.Concrete.UserFollower", b =>
@@ -265,7 +278,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UsersFollower");
+                    b.ToTable("UserFollower");
                 });
 #pragma warning restore 612, 618
         }

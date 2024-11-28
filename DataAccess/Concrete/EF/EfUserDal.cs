@@ -32,13 +32,15 @@ public class EfUserDal(BloggingAppDbContext context) : BaseRepository<User, Blog
                      on U.Id equals UOC.UserId
                      join OC in context.OperationClaims
                      on UOC.OperationClaimId equals OC.Id
-                     group new { U, OC } by new { U.Id, U.FirstName, U.LastName, U.Email } into grouped
+                     group new { U, OC } by new { U.Id, U.FirstName, U.LastName, U.Username, U.Email, U.JoinDate } into grouped
                      select new UserDto
                      {
                          Id = grouped.Key.Id,
                          FirstName = grouped.Key.FirstName,
                          LastName = grouped.Key.LastName,
+                         Username = grouped.Key.Username,
                          Email = grouped.Key.Email,
+                         JoinDate = grouped.Key.JoinDate,
                          UserRole = string.Join(", ", grouped.Select(g => g.OC.Name))
                      };
         return result.ToList();

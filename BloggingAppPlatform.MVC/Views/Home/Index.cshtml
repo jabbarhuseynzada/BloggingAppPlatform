@@ -28,7 +28,7 @@ else
                                         @post.Title
                                     </a>
                                 </h3>
-                                <span class="fs-6 text-muted">@post.Username</span>
+                                <span class="fs-6 text-muted"><a href="/Profile/GetProfile?userName=@post.Username">@@@post.Username</a></span>
                             </div>
                         </div>
                     </div>
@@ -42,7 +42,7 @@ else
                     <div class="d-flex justify-content-between">
                         <div>
                             <a href="#" class="fw-light nav-link fs-6">
-                                <span class="fas fa-heart me-1"></span> 100
+                                <span class="fas fa-comment me-1"></span>@post.CommentCount
                             </a>
                         </div>
                         <div>
@@ -84,24 +84,34 @@ else
                                     <img style="width:35px" class="me-2 avatar-sm rounded-circle"
                                          src="https://api.dicebear.com/6.x/fun-emoji/svg?seed=@comment.Username"
                                          alt="@comment.Username Avatar">
-                                    <div class="w-100">
+                                    <div class="w-100 mx-2">
                                         <div class="d-flex justify-content-between">
-                                            <h6>@comment.Username</h6>
+                                            <h6>@@@comment.Username</h6>
                                             <small class="fs-6 fw-light text-muted">
-                                                @comment.CommentTime.ToShortTimeString()
+                                                @comment.CommentTime.ToShortTimeString() | @comment.CommentTime.ToString("MM/dd/yyyy")
                                             </small>
                                         </div>
                                         <p class="fs-6 mt-3 fw-light">@comment.CommentText</p>
                                     </div>
-
                                     <!-- Delete comment button (visible to the comment author only) -->
                                     @if (User.Identity.Name == comment.Username)
                                     {
-                                        <form method="post" asp-action="DeleteComment" asp-controller="Comment" asp-route-commentId="@comment.CommentId">
+                                        <div> 
+
+                                        <form method="post" asp-action="DeleteComment" asp-controller="Comment" asp-area="" asp-route-commentId="@comment.CommentId">
                                             <button type="submit" class="btn btn-danger w-100 text-center">
                                                 <span class="fas fa-xmark me-1"></span>
                                             </button>
                                         </form>
+                                       @*  <form method="post" asp-action="UpdateCommentView" asp-controller="Comment" asp-area="" asp-route-commentId="@comment.CommentId">
+                                            <button type="submit" class="btn btn-warning w-100 text-center">
+                                                <span class="fas fa-pencil me-1"></span>
+                                            </button>
+                                        </form> *@
+                                        <a class="btn btn-warning w-100 mt-2" asp-action="UpdateCommentView" asp-controller="Comment" asp-area="" asp-route-commentId="@comment.CommentId" asp-route-commentText="@comment.CommentText">
+                                                <i class="fa-solid fa-pencil"></i>
+                                        </a>
+                                        </div>
                                     }
                                 </div>
                                 <hr />

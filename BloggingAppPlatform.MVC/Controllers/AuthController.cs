@@ -86,7 +86,6 @@ namespace WebApp.Controllers
                 return View(loginDTO);
             }
 
-            // Validate user credentials
             var userToLogin = _authService.Login(loginDTO);
             if (!userToLogin.Success)
             {
@@ -94,7 +93,6 @@ namespace WebApp.Controllers
                 return View(loginDTO);
             }
 
-            // Generate JWT token
             var result = _authService.CreateAccessToken(userToLogin.Data);
             if (!result.Success)
             {
@@ -102,37 +100,32 @@ namespace WebApp.Controllers
                 return View(loginDTO);
             }
 
-            // Extract the token
-            var token = result.Data; // Assuming result.Data contains the JWT token
+            var token = result.Data; 
 
-            // Decode JWT token to extract expiration time (exp claim)
             var tokenHandler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
             var jwtToken = tokenHandler.ReadJwtToken(token.Token);
 
-            // Extract expiration claim (exp)
             var expClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "exp");
             if (expClaim != null)
             {
-                // Convert expiration time (exp) from UNIX timestamp to DateTimeOffset
                 var expirationTime = DateTimeOffset.FromUnixTimeSeconds(long.Parse(expClaim.Value));
 
-                // Set the JWT token in a cookie with the extracted expiration time
                 Response.Cookies.Append("auth_token", token.Token, new CookieOptions
                 {
-                    HttpOnly = true, // Recommended to prevent XSS attacks
-                    Secure = true, // Use true in production for HTTPS
-                    SameSite = SameSiteMode.Strict, // Adjust according to your needs
-                    Expires = expirationTime // Automatically set cookie expiration to JWT expiration time
+                    HttpOnly = true, 
+                    Secure = true, 
+                    SameSite = SameSiteMode.Strict, 
+                    Expires = expirationTime 
                 });
             }
 
             // Create claims
             var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.Name, userToLogin.Data.Username),
-        new Claim(ClaimTypes.Email, userToLogin.Data.Email),
-        new Claim("userId", userToLogin.Data.Id.ToString()),
-    };
+            {
+                new Claim(ClaimTypes.Name, userToLogin.Data.Username),
+                new Claim(ClaimTypes.Email, userToLogin.Data.Email),
+                new Claim("userId", userToLogin.Data.Id.ToString()),
+            };
 
             var roles = _userService.GetClaims(userToLogin.Data);
             foreach (var role in roles)

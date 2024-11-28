@@ -3,6 +3,64 @@
 *@
 @{
 }
+@model BloggingAppPlatform.MVC.Areas.Admin.ViewModels.CommentVM
+@{
+    ViewData["Title"] = "Posts";
+}
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Message"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
 <h1>
     Comments
 </h1>
+<table class="table table-bordered table-striped overflow-scroll">
+    <thead>
+        <tr class="text-center">
+            <th>#</th>
+            <th>Comment ID</th>
+            <th>Post ID</th>
+            <th>User ID</th>
+            <th>Comment</th>
+            <th>Comment Time</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            if (Model.Comments != null && Model.Comments.Count > 0)
+            {
+                int index = 1;
+                foreach (var comment in Model.Comments)
+                {
+                    <tr class="text-center">
+                        <td>@index</td>
+                        <td>@comment.CommentId</td>
+                        <td>@comment.PostId</td>
+                        <td>@comment.UserId</td>
+                        <td>@comment.CommentText</td>
+                        <td>@comment.CommentTime.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            <form method="post" asp-action="DeleteComment" asp-controller="Comments" asp-area="Admin" asp-route-CommentId="@comment.CommentId">
+                                <button type="submit" class="btn btn-danger w-100">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    index++;
+
+                }
+            }
+        }
+    </tbody>
+</table>

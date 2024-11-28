@@ -15,8 +15,10 @@ namespace DataAccess.Concrete.EF
         public DbSet<OperationClaim> OperationClaims { get; set; }
         public DbSet<UserOperationClaim> UserOperations { get; set; }
         public DbSet<Post> Posts { get; set; }
-        public DbSet<PostImage> PostImages { get; set; }
+        public DbSet<Report> Reports { get; set; }
+        
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<UserFollower> userFollowers { get; set; }
 
         /*
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -52,6 +54,16 @@ namespace DataAccess.Concrete.EF
                 {
                     Id = 5,
                     Name = "comment.delete"
+                },
+                new OperationClaim
+                {
+                    Id = 6,
+                    Name = "add.opclaim"
+                },
+                new OperationClaim
+                {
+                    Id = 7,
+                    Name = "delete.report"
                 }
             );
             modelBuilder.Entity<UserOperationClaim>().HasData(
@@ -78,6 +90,19 @@ namespace DataAccess.Concrete.EF
                      Id = 4,
                      UserId = 1,
                      OperationClaimId = 5
+                 }
+                 ,
+                 new UserOperationClaim
+                 {
+                     Id = 5,
+                     UserId = 1,
+                     OperationClaimId = 6
+                 },
+                 new UserOperationClaim
+                 {
+                     Id = 6,
+                     UserId = 1,
+                     OperationClaimId = 7
                  }
             );
         }

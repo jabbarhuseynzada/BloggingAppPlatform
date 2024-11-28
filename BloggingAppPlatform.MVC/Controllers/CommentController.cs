@@ -1,7 +1,10 @@
-﻿using Business.Abstract;
+﻿using BloggingAppPlatform.MVC.ViewModels;
+using Business.Abstract;
 using Core.Helpers.Security.JWT;
+using Entities.Concrete;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 
 namespace BloggingAppPlatform.MVC.Controllers
 {
@@ -66,6 +69,48 @@ namespace BloggingAppPlatform.MVC.Controllers
 
             TempData["Error"] = result.Message;
             return RedirectToAction("Error", "Home");
+        }
+        [HttpPost]
+        public IActionResult UpdateComment(UpdateCommentDto uComment)
+        {
+            var token = Request.Cookies["auth_token"];
+            var userId = JwtHelper.GetUserIdFromToken(token);
+
+          
+            var result = _commentService.Update(uComment, userId.Value);
+
+            if (result.Success)
+            {
+                TempData["SuccessMessage"] = "Comment updated successfully!";
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+
+                ViewBag.ErrorMessage = result.Message;
+
+
+                UpdateCommentVM vm = new()
+                {
+                    CommentDto = uComment,
+                };
+                return View(vm);
+            }
+        }
+        [HttpGet]
+        public IActionResult UpdateCommentView(int CommentId, string CommentText)
+        {
+            UpdateCommentDto updateComment = new()
+            {   
+                CommentId = CommentId,
+                CommentText = CommentText
+            };
+            UpdateCommentVM vm = new()
+            {
+                CommentDto = updateComment,
+            };
+            return View("UpdateComment",vm);
+
         }
     }
 }

@@ -51,13 +51,13 @@ namespace Business.Concrete
 
 
 
-        [SecuredOperation("User,Admin,Moderator")]
+        [SecuredOperation("User,comment.delete")]
         public IResult Delete(int commentId, int _userId)
         {
-            var userId = _userId;
+            int userId = _userId;
             var deleteCommentClaim = _contextAccessor.HttpContext.User.ClaimRoles().Contains("comment.delete");
             var deleteComment = _commentDal.Get(c => c.Id == commentId && c.IsDeleted == false);
-            if (deleteComment != null && (deleteComment.UserId == userId || _postDal.Get(p => p.Id == deleteComment.PostId).UserId == userId || deleteCommentClaim == true))
+            if (deleteComment != null || deleteCommentClaim || deleteComment.UserId == userId)
             {
                 deleteComment.IsDeleted = true;
                 deleteComment.UpdateTime = DateTime.Now;
@@ -73,16 +73,22 @@ namespace Business.Concrete
 
         [SecuredOperation("User,Admin,Moderator")]
         [ValidationAspect<UpdateCommentDto>(typeof(UpdateCommentValidator))]
-        public IResult Update(UpdateCommentDto comment)
+        public IResult Update(UpdateCommentDto comment, int userId)
         {
-            var userId = _contextAccessor?.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //var userId = _contextAccessor?.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
             //var userRole = _contextAccessor?.HttpContext?.User.FindFirstValue(ClaimTypes.Role);
-            Comment updateComment = _mapper.Map<Comment>(comment);
-            if (updateComment != null && updateComment.UserId == int.Parse(userId))
+            //Comment updateComment = _mapper.Map<Comment>(comment);
+            Comment uComment = _commentDal.Get(c => c.Id == comment.CommentId);
+            if (uComment != null && uComment.UserId == userId)
             {
-                updateComment.IsDeleted = false;
-                updateComment.UpdateTime = DateTime.Now;
-                _commentDal.Update(updateComment);
+                //updateComment.Id = comment.CommentId;
+                //updateComment.IsDeleted = false;
+                //updateComment.UpdateTime = DateTime.Now;
+                //_commentDal.Update(updateComment);
+                uComment.IsDeleted = false;
+                uComment.UpdateTime = DateTime.Now;
+                uComment.CommentText = comment.CommentText;
+                
                 return new SuccessResult("Comment Succesfully uptaded");
             }
             else
@@ -98,6 +104,15 @@ namespace Business.Concrete
                 return new SuccessDataResult<List<CommentDto>>(commentDtos, "All comments are fetched");
             else
                 return new ErrorDataResult<List<CommentDto>>(commentDtos, "There is no comments");
+        }
+        public IDataResult<List<GetCommentDto>> GetAllComments()
+        {
+            var comments = _commentDal.GetAll(c => c.IsDeleted == false);
+            var commentDtos = _mapper.Map<List<GetCommentDto>>(comments);
+            if (comments.Count > 0)
+                return new SuccessDataResult<List<GetCommentDto>>(commentDtos, "All comments are fetched");
+            else
+                return new ErrorDataResult<List<GetCommentDto>>(commentDtos, "There is no comments");
         }
 
         public IDataResult<CommentDto> GetCommentById(int commentId)
@@ -137,7 +152,7 @@ namespace Business.Concrete
                     PostId = comment.PostId,
                     CommentText = comment.CommentText,
                     CommentTime = comment.UpdateTime,
-                    Username = user.Username
+                    Username = user.User.Username
                 };
                 result.Add(commentDto);
             }

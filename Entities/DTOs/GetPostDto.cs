@@ -15,5 +15,6 @@ namespace Entities.DTOs
         public string Context { get; set; }
         public string Username { get; set; }
         public string Date { get; set; }
+        public int CommentCount { get; set; }
     }
 }

@@ -18,10 +18,11 @@ namespace Business.Concrete
 {
     public class PostManager : IPostService
     {
-        public PostManager(IPostDal postDal, IHttpContextAccessor httpContextAccessor, IMapper mapper, IUserService userService)
+        public PostManager(IPostDal postDal, IHttpContextAccessor httpContextAccessor, IMapper mapper, IUserService userService, ICommentService commentService)
         {
             _postDal = postDal;
             _httpContextAccessor = httpContextAccessor;
+            _commentService = commentService;
             _mapper = mapper;
             _userService = userService;
         }
@@ -29,6 +30,7 @@ namespace Business.Concrete
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
+        private readonly ICommentService _commentService;
 
         [SecuredOperation("User")]
         [ValidationAspect<AddPostDto>(typeof(PostValidator))]
@@ -70,13 +72,16 @@ namespace Business.Concrete
         [ValidationAspect<UpdatePostDto>(typeof(UpdatePostDtoValidator))]
         public IResult Update(UpdatePostDto post, int userId)
         {
-            Post updatePost = _mapper.Map<Post>(post);
+            //Post updatePost = _mapper.Map<Post>(post);
+            Post uPost = _postDal.Get(p => p.Id == post.PostId);
 
-            if (updatePost != null && updatePost.UserId == userId)
+            if (uPost != null && uPost.UserId == userId)
             {
-                updatePost.UserId = userId; // Ensure the userId is set correctly
-                updatePost.UpdateTime = DateTime.Now;
-                _postDal.Update(updatePost);
+                 // Ensure the userId is set correctly
+                uPost.UpdateTime = DateTime.Now;
+                uPost.Title = post.Title;
+                uPost.Context = post.Context;
+                _postDal.Update(uPost);
                 return new SuccessResult("Post is successfully updated");
             }
             else
@@ -99,11 +104,12 @@ namespace Business.Concrete
                 var user = _userService.GetUserById(post.UserId);
                 GetPostDto postDto = new()
                 {
-                    UserId = user.Id,
+                    UserId = user.User.Id,
                     Context = post.Context,
                     PostId = post.Id,
+                    CommentCount = _commentService.GetCommentsByPostId(post.Id).Data.Count,
                     Title = post.Title,
-                    Username = user.Username,
+                    Username = user.User.Username,
                     Date = post.UpdateTime.HasValue ? post.UpdateTime.Value.ToString("dd/MM/yyyy") : ""
                 };
 
@@ -152,11 +158,12 @@ namespace Business.Concrete
                 GetPostDto postDto = new()
                 {
                     PostId = post.Id,
-                    UserId = user.Id,
+                    UserId = user.User.Id,
                     Context = post.Context,
+                    CommentCount = _commentService.GetCommentsByPostId(post.Id).Data.Count,
                     Title = post.Title,
-                    Username = user.Username,
-                    Date = post.UpdateTime.HasValue ? post.UpdateTime.Value.ToString("dd/MM/yyyy") : ""
+                    Username = user.User.Username,
+                    Date = post.UpdateTime.HasValue ? post.UpdateTime.Value.ToString("H:mm | dd/MM/yyyy") : ""
                 };
 
                 result.Add(postDto);

@@ -7,15 +7,18 @@ namespace Business.Abstract
     public interface IUserService
     {
         IResult DeleteUser(int id);
-        IResult ActivateUser(int id);
-        IResult AddOperationClaimToUser(int userId, int operationClaimId);
+        IResult UpdateUser(UpdateUserDto userDto, int userId);
+        //IResult ActivateUser(int id);
+        IResult AddOperationClaimToUser(string username, string operationClaimName);
+        IDataResult<List<OperationClaim>> GetAllOperationClaims();
         List<OperationClaim> GetClaims(User user);
         void Add(User user);
-        User GetUserById(int userId);
+        GetUserDto GetUserById(int userId);
         User GetByMail(string email);
         User GetByUsername(string username);
         IDataResult<List<UserDto>> GetAllUsers();
-        IResult FollowUser(int followedUserId);
-        IResult UnfollowUser(int followedUserId);
+        IResult FollowUser(int followerId, int followedUserId);
+        IResult UnfollowUser(int followerId, int unfollowedUserId);
+        IDataResult<bool> IsFollow(int followerId, int followedUserId);
     }
 }

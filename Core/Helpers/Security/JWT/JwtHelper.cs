@@ -28,7 +28,7 @@ namespace Core.Helpers.Security.JWT
             var securityKey = SecurityKeyHelper.CreateSecurityKey(_tokenOptions.SecurityKey);
             var signingCredentials = SigningCredentialsHelper.CreateSigningCredential(securityKey);
             var jwt = CreateJwtSecurityToken(_tokenOptions, user, signingCredentials, opeartionClaims);
-            var jwtSecurityHandler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+            var jwtSecurityHandler = new JwtSecurityTokenHandler();
             var token = jwtSecurityHandler.WriteToken(jwt);
 
             return new AccessToken
@@ -38,9 +38,9 @@ namespace Core.Helpers.Security.JWT
             };
         }
 
-        private System.IdentityModel.Tokens.Jwt.JwtSecurityToken CreateJwtSecurityToken(TokenOptions tokenOptions, User user, Microsoft.IdentityModel.Tokens.SigningCredentials signingCredentials, List<OperationClaim> opeartionClaims)
+        private JwtSecurityToken CreateJwtSecurityToken(TokenOptions tokenOptions, User user, SigningCredentials signingCredentials, List<OperationClaim> opeartionClaims)
         {
-            var jwtSecurityToken = new System.IdentityModel.Tokens.Jwt.JwtSecurityToken(
+            var jwtSecurityToken = new JwtSecurityToken(
                  issuer: tokenOptions.Issuer,
                  audience: tokenOptions.Audience,
                  expires: _expirationDate,
@@ -89,12 +89,12 @@ namespace Core.Helpers.Security.JWT
             {
                 var jwtToken = handler.ReadJwtToken(token);
 
-                // Log all claims for inspection
+               /* // Log all claims for inspection
                 foreach (var claim in jwtToken.Claims)
                 {
                     Console.WriteLine($"Claim Type: {claim.Type}, Claim Value: {claim.Value}");
                 }
-
+*/
                 // Make sure to search for the correct claim type
                 var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 

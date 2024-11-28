@@ -1,4 +1,5 @@
 ﻿using Core.DataAccess.Concrete;
+using Core.Entities.Abstract;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using System;
@@ -11,5 +12,11 @@ namespace DataAccess.Concrete.EF
 {
     public class EfUserFollowerDal(BloggingAppDbContext context) : BaseRepository<UserFollower, BloggingAppDbContext>(context), IUserFollowerDal
     {
+        public void DeleteFollow(UserFollower userFollower)
+        {
+            var deletedEntity = context.Entry(userFollower);
+            deletedEntity.State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+            context.SaveChanges();
+        }
     }
 }

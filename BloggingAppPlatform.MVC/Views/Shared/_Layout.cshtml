@@ -55,6 +55,7 @@
                                 </form>
                             </li>
                         }
+                       
                     </ul>
                 </div>
             </div>
@@ -73,39 +74,24 @@
                         <div class="card-body pt-3">
                             <ul class="nav nav-link-secondary flex-column fw-bold gap-2">
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" href="#">
+                                        <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">
                                         <span>Home</span>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#">
-                                        <span>Explore</span>
+                                        <a class="nav-link" asp-controller="Report" asp-action="Index">
+                                        <span>Report</span>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#">
-                                        <span>Feed</span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">
-                                        <span>Terms</span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">
+                                    <a class="nav-link" asp-controller="Home" asp-action="Index">
                                         <span>Support</span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">
-                                        <span>Settings</span>
                                     </a>
                                 </li>
                             </ul>
                         </div>
                         <div class="card-footer text-center py-2">
-                            <a class="btn btn-link btn-sm" href="#">View Profile </a>
+                                <a class="btn btn-link btn-sm" asp-controller="Profile" asp-action="Index">View Profile </a>
                         </div>
                     </div>
                 }
@@ -125,18 +111,20 @@
                             <h5 class="">Search</h5>
                         </div>
                         <div class="card-body">
-                            <input placeholder="..." class="form-control w-100" type="text" id="search">
-                            <button class="btn btn-dark mt-2"> Search</button>
+                             <form method="get" action="/Profile/GetProfile">
+                                <input placeholder="..." class="form-control w-100" name="userName" type="text" id="search">
+                                <button type="submit" class="btn btn-dark mt-2"> Search</button>
+                              </form> 
                         </div>
                     </div>
-                    <div class="card mt-3">
+                    @* <div class="card mt-3">
                         <div class="card-header pb-0 border-0">
                             <h5 class="">Who to follow</h5>
                         </div>
                         <div class="card-body">
                             <!-- Follow suggestions -->
                         </div>
-                    </div>
+                    </div> *@
                 }
             </div>
             }

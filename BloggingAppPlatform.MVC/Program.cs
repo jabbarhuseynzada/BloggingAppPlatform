@@ -123,6 +123,11 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}"
 );
+app.MapControllerRoute(
+    name: "userProfile",
+    pattern: "UserProfile/{userId:int}",
+    defaults: new { controller = "Profile", action = "GetProfile" }
+);
 
 // Login and Logout routes
 app.MapControllerRoute(
